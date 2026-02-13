@@ -61,3 +61,53 @@ a {
 a:hover {
   color: var(--color-primary-hover);
 }
+
+.siteHeader {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.siteHeaderInner {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+}
+
+.nav a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+.siteMain {
+  padding: 32px 0;
+}
+
+.siteFooter {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 16px 0;
+}
+
+.siteFooterInner {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
