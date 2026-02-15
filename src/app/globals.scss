@@ -222,3 +222,19 @@ a:hover {
   padding: 12px;
   resize: vertical;
 }
+
+
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+.site {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.siteMain {
+  flex: 1;
+}

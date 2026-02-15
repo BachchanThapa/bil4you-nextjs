@@ -1,3 +1,4 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.scss";
 
@@ -19,26 +20,22 @@ export const metadata: Metadata = {
   description: "Bil4You – modern bilförsäljning online",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sv" suppressHydrationWarning>
-      {/*
-        lang="sv" because the site content is in Swedish.
-        Important for accessibility and SEO.
-      */}
+      {/* lang="sv" because the site content is in Swedish. */}
       <body>
-        {/* Global header visible on all pages */}
-        <Header />
+        {/* This wrapper makes footer stay at bottom on short pages */}
+        <div className="site">
+          {/* Global header visible on all pages */}
+          <Header />
 
-        {/* Main page content will be injected here */}
-        <main className="siteMain">{children}</main>
+          {/* Main page content will be injected here */}
+          <main className="siteMain">{children}</main>
 
-        {/* Global footer visible on all pages */}
-        <Footer />
+          {/* Global footer visible on all pages */}
+          <Footer />
+        </div>
       </body>
     </html>
   );

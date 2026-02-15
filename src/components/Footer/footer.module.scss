@@ -7,10 +7,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  /* Optional: keeps it visually consistent */
+  flex-shrink: 0;
 }
 
 .inner {
-  width: 1440px;
+  width: 100%;
+  max-width: 1440px;
+  padding: 0 24px;
+
   text-align: center;
   font-size: 14px;
   color: #111827;

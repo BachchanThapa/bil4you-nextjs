@@ -2,7 +2,7 @@
 .card {
   width: 320px; /* IMPORTANT: fixed card width (Figma-like) */
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* better when we have extra lines */
   gap: 12px;
   padding: 12px;
 
@@ -48,7 +48,23 @@
 
 .price {
   font-size: 14px;
-  color: var(--color-text-muted); /* FIX: correct global token */
+  color: var(--color-text-muted);
+  line-height: 1.2;
+}
+
+/* NEW: extra info list */
+.metaList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.metaItem {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
 }
 
 .link {
@@ -56,8 +72,24 @@
   font-weight: 500;
   color: var(--color-primary);
   text-decoration: underline;
+  margin-top: 2px;
 }
 
 .link:hover {
   color: var(--color-primary-hover);
+}
+
+
+.metaList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 2px;
+}
+
+.metaItem {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
 }
