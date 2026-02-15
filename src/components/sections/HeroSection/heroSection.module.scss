@@ -1,0 +1,47 @@
+/* Hero section — centered like Figma */
+.hero {
+  padding: 96px 0;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.heroText {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.searchRow {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchInput {
+  width: 520px;
+  max-width: 100%;
+}
+
+.searchButton {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 64px 0;
+  }
+}
