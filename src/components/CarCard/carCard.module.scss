@@ -1,10 +1,14 @@
+/* Car card — pixel-stable layout like Figma */
 .card {
+  width: 320px; /* IMPORTANT: fixed card width (Figma-like) */
   display: flex;
-  gap: 16px;
-  padding: 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: var(--radius);
   transition: 0.2s ease;
 }
 
@@ -13,15 +17,23 @@
 }
 
 .imageWrapper {
-  flex-shrink: 0;
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: var(--color-border); /* fallback if image loads slow */
 }
 
 .image {
-  border-radius: 8px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .content {
+  min-width: 0; /* IMPORTANT: prevents text overflow issues */
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -30,15 +42,22 @@
 .title {
   font-size: 16px;
   font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.2;
 }
 
 .price {
   font-size: 14px;
-  color: var(--color-muted);
+  color: var(--color-text-muted); /* FIX: correct global token */
 }
 
 .link {
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--color-primary);
-  text-decoration: none;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: var(--color-primary-hover);
 }
