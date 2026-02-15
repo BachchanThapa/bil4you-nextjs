@@ -1,8 +1,9 @@
+import type { Metadata } from "next";
 import "./globals.scss";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Bil4You",
-  description: "Buy and sell used cars in Sweden",
+  description: "Bil4You demo site",
 };
 
 export default function RootLayout({
@@ -13,7 +14,9 @@ export default function RootLayout({
   return (
     <html lang="sv">
       <body>
+        <header style={{ height: 72, borderBottom: "1px solid var(--color-border)" }} />
         {children}
+        <footer style={{ height: 72, borderTop: "1px solid var(--color-border)" }} />
       </body>
     </html>
   );
