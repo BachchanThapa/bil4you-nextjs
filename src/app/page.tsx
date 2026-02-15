@@ -137,7 +137,6 @@ export default function HomePage() {
             Populära bilar
           </h2>
 
-          {/* Grid that becomes responsive automatically */}
           <div
             style={{
               display: "grid",
@@ -181,7 +180,14 @@ export default function HomePage() {
                   <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text)" }}>
                     <strong>Model:</strong> {car.model}
                   </p>
-                  <p style={{ margin: "6px 0 0", fontSize: "14px", color: "var(--color-text-muted)" }}>
+
+                  <p
+                    style={{
+                      margin: "6px 0 0",
+                      fontSize: "14px",
+                      color: "var(--color-text-muted)",
+                    }}
+                  >
                     Pris: {car.price}
                   </p>
 
@@ -219,4 +225,3 @@ export default function HomePage() {
     </main>
   );
 }
-
