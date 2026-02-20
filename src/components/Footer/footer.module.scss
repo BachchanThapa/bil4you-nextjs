@@ -1,23 +1,44 @@
 .footer {
   width: 100%;
-  height: 58px;
   border-top: 1px solid #e2e8f0;
   background: #ffffff;
-
   display: flex;
   justify-content: center;
-  align-items: center;
-
-  /* Optional: keeps it visually consistent */
-  flex-shrink: 0;
+  padding: 12px 0;
 }
 
 .inner {
   width: 100%;
   max-width: 1440px;
   padding: 0 24px;
+}
 
-  text-align: center;
+.content {
+  display: flex;
+  flex-direction: column; /* 👈 makes text on top */
+  align-items: center;
+  gap: 6px;
+}
+
+.followText {
   font-size: 14px;
+  font-weight: 500;
   color: #111827;
+}
+
+.socials {
+  display: flex;
+  gap: 18px;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  a:hover {
+    transform: translateY(-3px);
+    opacity: 0.7;
+  }
 }

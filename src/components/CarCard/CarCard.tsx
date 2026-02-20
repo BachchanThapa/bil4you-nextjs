@@ -10,6 +10,9 @@ type CarCardProps = {
 
   // NEW: optional extra info lines (year, fuel, published date, etc.)
   metaLines?: string[];
+
+  // ✅ NEW: allow this card to stretch (used on Köp bilar results)
+  fluid?: boolean;
 };
 
 /*
@@ -17,9 +20,16 @@ type CarCardProps = {
   - CarCard is a reusable UI component (Hem + Köp bilar).
   - We keep layout here so pages only focus on structure/content.
 */
-export default function CarCard({ title, price, image, href, metaLines }: CarCardProps) {
+export default function CarCard({
+  title,
+  price,
+  image,
+  href,
+  metaLines,
+  fluid = false,
+}: CarCardProps) {
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} ${fluid ? styles.cardFluid : ""}`}>
       <div className={styles.imageWrapper}>
         <Image
           src={image}

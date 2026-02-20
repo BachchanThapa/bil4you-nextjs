@@ -9,12 +9,6 @@ type PopularCar = {
   img: string;
 };
 
-/*
-  Note to reviewer/teacher:
-  - PopularCarsSection is a page section for Hem.
-  - Demo data is kept here for now. Later it can come from an API without changing UI.
-  - CarCard is reused to keep UI consistent across pages.
-*/
 const popularCars: PopularCar[] = [
   {
     id: "bmw-520d-2017",
@@ -29,7 +23,7 @@ const popularCars: PopularCar[] = [
     img: "/images/cars/thumbs/volvo-v60-cross-country-thumb.jpg",
   },
   {
-    id: "volvo-v60-white",
+    id: "volvo-v60-white", // ✅ THIS ONE will open your detail page
     model: "Volvo V60 2019",
     price: "219 000 kr",
     img: "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
@@ -55,6 +49,13 @@ const popularCars: PopularCar[] = [
 ];
 
 export default function PopularCarsSection() {
+  const getHref = (carId: string) => {
+    // Only the white Volvo V60 card goes to the real detail page
+    if (carId === "volvo-v60-white") return "/car-detail";
+    // Everything else goes to "under development"
+    return "/page-under-develop";
+  };
+
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>Populära bilar</h2>
@@ -66,7 +67,7 @@ export default function PopularCarsSection() {
             title={car.model}
             price={car.price}
             image={car.img}
-            href={`/kop-bilar#${car.id}`}
+            href={getHref(car.id)}
           />
         ))}
       </div>

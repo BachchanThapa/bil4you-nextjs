@@ -154,14 +154,12 @@ function formatPriceSEK(n: number) {
 type SortValue = "newest" | "priceAsc" | "priceDesc";
 
 export default function KopBilarPage() {
-  // FILTER state (IMPORTANT: default is empty = no prefilled 200000)
   const [make, setMake] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [minPrice, setMinPrice] = useState<string>("");
   const [year, setYear] = useState<string>("");
   const [fuel, setFuel] = useState<string>("");
 
-  // SORT state
   const [sortBy, setSortBy] = useState<SortValue>("newest");
 
   const makes = useMemo(
@@ -175,7 +173,6 @@ export default function KopBilarPage() {
   );
 
   const filteredAndSorted = useMemo(() => {
-    // Convert input strings to numbers (empty => null)
     const max = maxPrice.trim() === "" ? null : Number(maxPrice);
     const min = minPrice.trim() === "" ? null : Number(minPrice);
     const yearNum = year.trim() === "" ? null : Number(year);
@@ -183,11 +180,14 @@ export default function KopBilarPage() {
     let list = [...cars];
 
     if (make) list = list.filter((c) => c.make === make);
-    if (yearNum !== null && Number.isFinite(yearNum)) list = list.filter((c) => c.year === yearNum);
+    if (yearNum !== null && Number.isFinite(yearNum))
+      list = list.filter((c) => c.year === yearNum);
     if (fuel) list = list.filter((c) => c.fuel === fuel);
 
-    if (max !== null && Number.isFinite(max)) list = list.filter((c) => c.price <= max);
-    if (min !== null && Number.isFinite(min)) list = list.filter((c) => c.price >= min);
+    if (max !== null && Number.isFinite(max))
+      list = list.filter((c) => c.price <= max);
+    if (min !== null && Number.isFinite(min))
+      list = list.filter((c) => c.price >= min);
 
     if (sortBy === "newest") {
       list.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
@@ -209,6 +209,11 @@ export default function KopBilarPage() {
     setYear("");
     setFuel("");
     setSortBy("newest");
+  };
+
+  const getCarHref = (carId: string) => {
+    if (carId === "volvo-v60-2019-polestar") return "/car-detail";
+    return "/page-under-develop";
   };
 
   return (
@@ -293,7 +298,11 @@ export default function KopBilarPage() {
                 </select>
               </div>
 
-              <button type="button" className={styles.linkButton} onClick={resetAll}>
+              <button
+                type="button"
+                className={styles.linkButton}
+                onClick={resetAll}
+              >
                 Visa resultat...
               </button>
             </aside>
@@ -321,33 +330,39 @@ export default function KopBilarPage() {
                 </div>
               </div>
 
-              {/* ✅ NO RESULTS MESSAGE */}
               {resultsCount === 0 ? (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyTitle}>Tyvärr!</p>
                   <p className={styles.emptyText}>
-                    Just nu har vi inga bilar som matchar din sökning. Prova att ändra filter eller välj ett annat märke.
+                    Just nu har vi inga bilar som matchar din sökning. Prova att
+                    ändra filter eller välj ett annat märke.
                   </p>
 
-                  <button type="button" className={styles.emptyButton} onClick={resetAll}>
+                  <button
+                    type="button"
+                    className={styles.emptyButton}
+                    onClick={resetAll}
+                  >
                     Rensa filter
                   </button>
                 </div>
               ) : (
                 <>
-                  <div className={styles.cardsGrid}>
+                  {/* ✅ CHANGED: use resultsGrid so cards fill the whole result box */}
+                  <div className={styles.resultsGrid}>
                     {filteredAndSorted.map((car) => (
                       <CarCard
                         key={car.id}
                         title={`Model: ${car.make} ${car.model}`}
                         price={formatPriceSEK(car.price)}
                         image={car.image}
-                        href={`/kop-bilar#${car.id}`}
+                        href={getCarHref(car.id)}
                         metaLines={[
                           `Årsmodell: ${car.year}`,
                           `Bränsle: ${car.fuel}`,
                           `Publicerad: ${car.publishedAt}`,
                         ]}
+                        fluid
                       />
                     ))}
                   </div>

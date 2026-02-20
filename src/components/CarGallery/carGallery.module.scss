@@ -1,0 +1,59 @@
+.gallerySection {
+  width: 100%;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* make left bigger */
+  gap: 12px;
+  min-height: 420px;
+}
+
+.galleryMain {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.gallerySide {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.sideBtn {
+  position: relative;
+  border: 0;
+  padding: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: transparent;
+  cursor: pointer;
+}
+
+.imgCover {
+  object-fit: cover;
+}
+
+.thumbsRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.thumbBtn {
+  border: 2px solid transparent;
+  padding: 6px;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+}
+
+.active {
+  border-color: #2563eb;
+}
+
+.thumbImg {
+  border-radius: 8px;
+  object-fit: cover;
+}
