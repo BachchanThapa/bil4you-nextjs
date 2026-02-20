@@ -17,12 +17,23 @@
   justify-content: space-between;
 }
 
-.logo {
-  font-size: 20px;
-  font-weight: 700;
+/* 🔹 Brand (Logo + Text) */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  text-decoration: none;
   color: #111827;
 }
 
+.brandText {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* 🔹 Navigation */
 .nav {
   display: flex;
   gap: 32px;
@@ -32,9 +43,14 @@
     font-size: 14px;
     font-weight: 500;
     color: #111827;
+    transition: 0.2s ease;
   }
 
   a:hover {
     color: #2563eb;
   }
+}
+
+.logoIcon {
+  transform: scaleX(-1);
 }

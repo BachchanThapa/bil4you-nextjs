@@ -1,8 +1,7 @@
-/* Car card — pixel-stable layout like Figma */
 .card {
-  width: 320px; /* IMPORTANT: fixed card width (Figma-like) */
+  width: 320px; /* default: fixed card width (Homepage) */
   display: flex;
-  align-items: flex-start; /* better when we have extra lines */
+  align-items: flex-start;
   gap: 12px;
   padding: 12px;
 
@@ -10,6 +9,12 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   transition: 0.2s ease;
+}
+
+/* ✅ NEW: fluid mode for Köp bilar (fills the results panel width) */
+.cardFluid {
+  width: 100%;
+  max-width: none;
 }
 
 .card:hover {

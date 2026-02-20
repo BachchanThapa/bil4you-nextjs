@@ -143,18 +143,23 @@
   color: var(--color-text-muted);
 }
 
-/* Cards: 2 columns like design */
-.cardsGrid {
+/* ✅ FIXED: cards now fill the whole result box (no empty right space) */
+.resultsGrid {
   display: grid;
-  grid-template-columns: repeat(2, 320px);
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: 14px;
-  justify-content: start;
+  width: 100%;
 }
 
+.resultsGrid > * {
+  width: 100%;
+}
+
+/* keep your link area tight */
 .moreRow {
   display: flex;
   justify-content: center;
-  padding-top: 14px;
+  padding-top: 12px;
 }
 
 .moreLink {
@@ -199,12 +204,13 @@
     grid-template-columns: 1fr;
   }
 
-  .cardsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    justify-content: stretch;
-  }
-
   .control {
     width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .resultsGrid {
+    grid-template-columns: 1fr;
   }
 }
