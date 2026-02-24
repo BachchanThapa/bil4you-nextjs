@@ -27,11 +27,12 @@ export default function CarGallery({ images }: Props) {
             alt={selected.alt}
             fill
             priority
+            sizes="(max-width: 900px) 100vw, 75vw"
             className={styles.imgCover}
           />
         </div>
 
-        {/* Right side images (optional, keep as static “preview”) */}
+        {/* Right side images (desktop preview) */}
         <div className={styles.gallerySide}>
           {images.slice(1, 4).map((img) => (
             <button
@@ -41,7 +42,13 @@ export default function CarGallery({ images }: Props) {
               onClick={() => setSelected(img)}
               aria-label={`Show image: ${img.alt}`}
             >
-              <Image src={img.hero} alt="" fill className={styles.imgCover} />
+              <Image
+                src={img.hero}
+                alt={img.alt}
+                fill
+                sizes="(max-width: 900px) 0px, 25vw"
+                className={styles.imgCover}
+              />
             </button>
           ))}
         </div>
@@ -61,9 +68,10 @@ export default function CarGallery({ images }: Props) {
           >
             <Image
               src={img.thumb}
-              alt=""
+              alt={img.alt}
               width={120}
               height={80}
+              sizes="120px"
               className={styles.thumbImg}
             />
           </button>
