@@ -239,3 +239,8 @@ html {
 .siteMain {
   flex: 1;
 }
+html,
+
+body {
+  overflow-x: hidden;
+}

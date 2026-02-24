@@ -306,10 +306,6 @@
   font-size: 13px;
 }
 
-/* Sticky seller card */
-.right {
-  /* container for sticky */
-}
 
 .stickyCard {
   position: sticky;
@@ -470,5 +466,156 @@
 
   .similarGrid {
     grid-template-columns: 1fr;
+  }
+}
+// More responsiveness
+/* ✅ Extra small screens (phones) */
+@media (max-width: 520px) {
+  .page {
+    padding: 16px 0 40px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  /* Breadcrumbs smaller */
+  .breadcrumbs ol {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  /* Gallery: force stacked, no side column */
+  .galleryGrid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .galleryMain {
+    min-height: 260px;
+    border-radius: 14px;
+  }
+
+  /* Side images become a row of 3 */
+  .gallerySide {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: none;
+    min-height: auto;
+  }
+
+  .gallerySmall {
+    min-height: 80px;
+    border-radius: 14px;
+  }
+
+  /* Title + price */
+  .header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 34px;
+    line-height: 1.05;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    margin: 8px 0 12px;
+  }
+
+  .priceCard {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .price {
+    font-size: 28px;
+  }
+
+  /* Main grid becomes one column */
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .block {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  /* Quick stats: 2 columns instead of 3 */
+  .quickStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Specs: label/value tighter */
+  .specRow {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+  }
+
+  /* Similar cars already become 1 column at 900px, keep it */
+}
+
+/* ✅ Super tiny phones (like 320px) */
+@media (max-width: 360px) {
+  .title {
+    font-size: 30px;
+  }
+
+  .galleryMain {
+    min-height: 220px;
+  }
+
+  .gallerySmall {
+    min-height: 70px;
+  }
+
+  .quickStats {
+    grid-template-columns: 1fr; /* stack stats if 2-col feels tight */
+  }
+
+  .specRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+
+    dt {
+      font-size: 12px;
+    }
+
+    dd {
+      font-size: 13px;
+    }
+  }
+}
+@media (max-width: 360px) {
+  /* FORCE gallery to stack on tiny screens */
+  .galleryGrid {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+
+  /* Put the 3 small images in a row UNDER the main image */
+  .gallerySide {
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: none !important;
+    min-height: auto !important;
+  }
+
+  /* Make the main image box shorter so it's not “zoomed” */
+  .galleryMain {
+    min-height: 170px !important;
+  }
+
+  .gallerySmall {
+    min-height: 70px !important;
+  }
+
+  /* ✅ THIS is the big visual fix:
+     show whole car instead of cropping */
+  .imgCover {
+    object-fit: contain !important;
+    background: white;
   }
 }

@@ -2,6 +2,7 @@
   width: 100%;
 }
 
+/* ===== Desktop / default ===== */
 .galleryGrid {
   display: grid;
   grid-template-columns: 3fr 1fr; /* make left bigger */
@@ -13,12 +14,15 @@
   position: relative;
   border-radius: 16px;
   overflow: hidden;
+  background: #e2e8f0;
+  min-height: 420px;
 }
 
 .gallerySide {
   display: grid;
   grid-template-rows: repeat(3, 1fr);
   gap: 12px;
+  min-height: 420px;
 }
 
 .sideBtn {
@@ -27,18 +31,22 @@
   padding: 0;
   border-radius: 16px;
   overflow: hidden;
-  background: transparent;
+  background: #e2e8f0;
   cursor: pointer;
 }
 
 .imgCover {
   object-fit: cover;
+  object-position: center;
 }
 
+/* thumbs row */
 .thumbsRow {
   display: flex;
   gap: 10px;
   margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
 }
 
 .thumbBtn {
@@ -47,6 +55,7 @@
   border-radius: 12px;
   background: white;
   cursor: pointer;
+  flex: 0 0 auto;
 }
 
 .active {
@@ -56,4 +65,59 @@
 .thumbImg {
   border-radius: 8px;
   object-fit: cover;
+  display: block;
+}
+
+/* ===== Tablet & below ===== */
+@media (max-width: 900px) {
+  /* ✅ Option B: hide the right-side images on smaller screens */
+  .galleryGrid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .gallerySide {
+    display: none;
+  }
+
+  .galleryMain {
+    min-height: 320px;
+  }
+}
+
+/* ===== Phones ===== */
+/* MOBILE — show FULL image (no crop) */
+@media (max-width: 520px) {
+  .galleryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* hide right-side images completely */
+  .gallerySide {
+    display: none;
+  }
+
+  .galleryMain {
+    min-height: 220px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .imgCover {
+    object-fit: contain !important;
+    background: #ffffff;
+  }
+}
+
+/* ===== Very small phones (320-ish) ===== */
+@media (max-width: 360px) {
+  .galleryMain {
+    min-height: 180px;
+  }
+
+  .imgCover {
+    object-fit: contain !important;
+  }
 }

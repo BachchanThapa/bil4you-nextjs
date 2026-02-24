@@ -214,3 +214,72 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 520px) {
+  .page {
+    padding: 24px 0 40px;
+  }
+
+  .panelInner {
+    padding: 14px;
+  }
+
+  /* stack label + control */
+  .field {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .control {
+    width: 100%;
+  }
+
+  /* result header should wrap nicely */
+  .resultHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .resultRight {
+    width: 100%;
+    justify-items: start;
+  }
+
+  .sortRow {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sortSelect {
+    width: 160px;
+    max-width: 100%;
+  }
+
+  /* cards full width on mobile */
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Make the outer wrapper invisible on mobile */
+  .panelInner {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    gap: 12px; /* keep nice spacing between Filter and Result */
+  }
+
+  /* Keep filter + result as the actual "cards" */
+  .filter,
+  .result {
+    border-radius: 12px;
+  }
+}
