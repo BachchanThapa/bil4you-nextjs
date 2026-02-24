@@ -1,3 +1,5 @@
+🇸🇪 Svensk version finns här: [README på svenska](README.md)
+
 # Bil4You – Internship Project
 
 Bil4You is a responsive car dealership website built with Next.js as part of an internship project.  
