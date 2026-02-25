@@ -4,7 +4,7 @@
   background: #ffffff;
   display: flex;
   justify-content: center;
-  padding: 12px 0;
+  padding: 16px 0; /* slightly increased */
 }
 
 .inner {
@@ -15,7 +15,14 @@
 
 .content {
   display: flex;
-  flex-direction: column; /* 👈 makes text on top */
+  flex-direction: column; /* mobile default */
+  align-items: center;
+  gap: 12px; /* slightly more breathing space */
+}
+
+.socialSection {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
 }
@@ -40,5 +47,33 @@
   a:hover {
     transform: translateY(-3px);
     opacity: 0.7;
+  }
+}
+
+.copyright {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Desktop layout */
+@media (min-width: 768px) {
+  .content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .socialSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  // keep this
+  gap: 6px;
+  text-align: center;   // 👈 add this
+}
+
+  .copyright {
+    text-align: right;
   }
 }
