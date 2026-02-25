@@ -1,0 +1,92 @@
+.page {
+  background: var(--color-bg);
+}
+
+/* HERO centered */
+.hero {
+  padding: 96px 0;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.heroText {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.searchRow {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchInput {
+  width: 520px;
+  max-width: 100%;
+}
+
+.searchButton {
+  white-space: nowrap;
+}
+
+/* POPULÄRA BILAR */
+.section {
+  padding-bottom: 32px;
+}
+
+/* Keep title aligned with grid block */
+.sectionHeader {
+  max-width: 1020px; /* 3 cards x 320 + 2 gaps x 16 = 992 -> give a little breathing room */
+  margin: 0 auto 16px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* FIX: Center the grid and keep card pixel width */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 320px);
+  gap: 16px;
+  justify-content: center; /* IMPORTANT: centers the whole grid block */
+}
+
+/* Responsive: 2 cards, then 1 card */
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, 320px);
+  }
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 320px;
+  }
+
+  .hero {
+    padding: 64px 0;
+  }
+}
+
+.moreRow {
+  margin-top: 8px;
+  text-align: center;
+}

@@ -1,0 +1,246 @@
+/* ==================================================
+   Bil4You — Global styles (Figma UI-kit tokens)
+   Notes for reviewer/teacher:
+   - I keep design values as CSS variables so I can reuse them on all pages
+     and keep the UI consistent (colors, radius, borders).
+   - Layout helpers like .container keep the same width/margins everywhere.
+   ================================================== */
+
+/* Basic reset: predictable spacing in all browsers */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+:root {
+  /* Colors (from UI Kit) */
+  --color-bg: #F7FAFC;          /* Background */
+  --color-surface: #FFFFFF;     /* Cards / Header / Footer */
+  --color-text: #111827;        /* Main text */
+  --color-text-muted: #6B7280;  /* Muted/help text */
+  --color-border: #E2E8F0;      /* Borders/lines */
+
+  --color-primary: #2F80ED;       /* Links + main buttons */
+  --color-primary-hover: #1B66C9; /* Hover */
+
+  /* Radius + sizing helpers */
+  --radius: 10px;
+
+  /* Typography (UI kit uses Inter) */
+  --font-sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* Reusable spacing tokens (helps keep consistent gaps/padding) */
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-64: 64px;
+
+  /* Control height (buttons/inputs should feel consistent everywhere) */
+  --control-height: 44px;
+}
+
+/* Dark-mode is optional in this project.
+   I keep it simple so the site still looks OK if a user prefers dark mode. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #0a0a0a;
+    --color-surface: #111827;
+    --color-text: #ededed;
+    --color-text-muted: #9ca3af;
+    --color-border: #374151;
+
+    --color-primary: #2F80ED;
+    --color-primary-hover: #1B66C9;
+  }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans); /* UI kit font */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Links: primary color + underline in the kit */
+a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Keyboard accessibility:
+   This makes it clear what is focused when navigating with Tab. */
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-primary) 55%, white);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------
+   Layout helpers (used across ALL pages)
+--------------------------------------------------- */
+
+/* .container keeps the same width and side padding on every page.
+   This is a common pattern in component-based Next.js projects. */
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-left: var(--space-64);
+  padding-right: var(--space-64);
+}
+
+@media (max-width: 900px) {
+  .container {
+    padding-left: var(--space-16);
+    padding-right: var(--space-16);
+  }
+}
+
+/* --------------------------------------------------
+   Header / Footer (global site structure)
+--------------------------------------------------- */
+
+.siteHeader {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.siteHeaderInner {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 24px; /* UI kit: brand/title size */
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 16px;
+}
+
+.nav a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500; /* small detail: makes nav feel like the mock */
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+.siteMain {
+  padding-top: var(--space-32);
+  padding-bottom: 0;
+}
+
+.siteFooter {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 16px 0;
+}
+
+.siteFooterInner {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------
+   Reusable UI components (buttons + inputs)
+   Reason: avoids repeating the same CSS in every page/module.
+--------------------------------------------------- */
+
+.buttonPrimary {
+  height: var(--control-height);
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 12px; /* slightly rounder like the UI kit controls */
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonPrimary:hover {
+  background: var(--color-primary-hover);
+}
+
+.buttonSecondary {
+  height: var(--control-height);
+  padding: 0 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Inputs in your kit have a light gray background and border */
+.input,
+.select,
+.textarea {
+  width: 100%;
+  height: var(--control-height);
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: #eeeeee; /* matches the "Links and inputs" reference */
+  color: var(--color-text);
+  font-size: 14px;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.textarea {
+  height: 140px; /* good default for Kontakt form */
+  padding: 12px;
+  resize: vertical;
+}
+
+
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+.site {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.siteMain {
+  flex: 1;
+}
+html,
+
+body {
+  overflow-x: hidden;
+}
