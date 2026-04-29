@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.scss";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 type UploadImage = {
   id: string;
@@ -10,9 +12,31 @@ type UploadImage = {
 };
 
 export default function SaljBilPage() {
+  const router = useRouter();
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [images, setImages] = useState<UploadImage[]>([]);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session) {
+        router.push("/login");
+        return;
+      }
+
+      setIsCheckingAuth(false);
+    }
+
+    checkAuth();
+  }, [router]);
+
+  if (isCheckingAuth) {
+    return <main className={styles.page}>Kontrollerar inloggning...</main>;
+  }
 
   function openFilePicker() {
     fileInputRef.current?.click();
@@ -22,13 +46,10 @@ export default function SaljBilPage() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    // Limit (you can change this)
     const MAX_IMAGES = 10;
 
-    // Only allow images
     const imageFiles = files.filter((f) => f.type.startsWith("image/"));
 
-    // How many more we can add
     const remaining = MAX_IMAGES - images.length;
     const filesToAdd = imageFiles.slice(0, Math.max(0, remaining));
 
@@ -40,10 +61,9 @@ export default function SaljBilPage() {
 
     setImages((prev) => [...prev, ...newItems]);
 
-    // IMPORTANT: reset input so selecting the same file again still triggers change
     e.target.value = "";
   }
-
+  
   function removeImage(id: string) {
     setImages((prev) => {
       const target = prev.find((x) => x.id === id);
