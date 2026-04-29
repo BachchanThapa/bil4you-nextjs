@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.scss";
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
@@ -23,7 +21,7 @@ export default function RegisterPage() {
     return hasMinLength && hasUppercase && hasLowercase && hasNumber;
   }
 
-  async function handleRegister(e: React.FormEvent) {
+  async function handleUpdatePassword(e: React.FormEvent) {
     e.preventDefault();
 
     setMessage("");
@@ -37,20 +35,17 @@ export default function RegisterPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
-      email,
+    const { error } = await supabase.auth.updateUser({
       password,
     });
 
     if (error) {
-      setMessage("Kontot kunde inte skapas. E-posten kan redan vara registrerad.");
+      setMessage("Lösenordet kunde inte uppdateras. Försök igen.");
       setMessageType("error");
       return;
     }
 
-    setMessage(
-      "Om e-postadressen är ny har kontot skapats. Kontrollera din e-post och logga sedan in."
-    );
+    setMessage("Ditt lösenord är uppdaterat. Du skickas nu till inloggning.");
     setMessageType("success");
 
     setTimeout(() => {
@@ -61,9 +56,9 @@ export default function RegisterPage() {
   return (
     <main className={styles.page}>
       <section className={styles.card}>
-        <h1 className={styles.title}>Registrera</h1>
+        <h1 className={styles.title}>Nytt lösenord</h1>
         <p className={styles.text}>
-          Skapa ett konto för att kunna sälja din bil och använda personliga funktioner.
+          Skriv ett nytt lösenord för ditt Bil4You-konto.
         </p>
 
         {message && (
@@ -76,22 +71,9 @@ export default function RegisterPage() {
           </p>
         )}
 
-        <form className={styles.form} onSubmit={handleRegister}>
-          <label className={styles.label} htmlFor="email">
-            E-post
-          </label>
-          <input
-            className={styles.input}
-            id="email"
-            type="email"
-            placeholder="dinmail@exempel.se"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
+        <form className={styles.form} onSubmit={handleUpdatePassword}>
           <label className={styles.label} htmlFor="password">
-            Lösenord
+            Nytt lösenord
           </label>
           <input
             className={styles.input}
@@ -108,12 +90,9 @@ export default function RegisterPage() {
           </p>
 
           <button className={styles.button} type="submit">
-            Skapa konto
+            Uppdatera lösenord
           </button>
         </form>
-          <p className={styles.switchText}>
-            Har du redan ett konto? <a href="/login">Logga in här</a>
-          </p>
       </section>
     </main>
   );
