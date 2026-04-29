@@ -1,8 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import styles from "./header.module.scss";
 
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function checkUser() {
+      const { data } = await supabase.auth.getSession();
+      setIsLoggedIn(!!data.session);
+    }
+
+    checkUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsLoggedIn(!!session);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    router.push("/login");
+  }
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -23,6 +56,17 @@ export default function Header() {
           <Link href="/kop-bilar">Köp bilar</Link>
           <Link href="/salj-bil">Sälj bil</Link>
           <Link href="/kontakt">Kontakt</Link>
+
+          {!isLoggedIn ? (
+            <>
+              <Link href="/login">Logga in</Link>
+              <Link href="/register">Registrera</Link>
+            </>
+          ) : (
+            <button onClick={handleLogout} className={styles.logoutButton}>
+              Logga ut
+            </button>
+          )}
         </nav>
       </div>
     </header>
