@@ -1,175 +1,132 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import Container from "@/components/Container";
 import CarCard from "@/components/CarCard/CarCard";
 import styles from "./page.module.scss";
 
-type Fuel = "Bensin" | "Diesel" | "Hybrid" | "El";
+type Fuel = "Bensin" | "Diesel" | "Hybrid" | "El" | string;
+
+type CarImage = {
+  image_url: string;
+  sort_order: number;
+};
+
+type SupabaseCar = {
+  id: string;
+  title: string;
+  brand: string;
+  model: string;
+  year: number;
+  fuel_type: string;
+  price: number;
+  created_at: string;
+  is_sold: boolean;
+  car_images: CarImage[];
+};
 
 type Car = {
   id: string;
-  make: string; // Märke
+  make: string;
   model: string;
-  year: number; // Årsmodell
-  fuel: Fuel; // Bränsle
-  price: number; // Pris
-  publishedAt: string; // YYYY-MM-DD
+  year: number;
+  fuel: Fuel;
+  price: number;
+  publishedAt: string;
   image: string;
 };
-
-const cars: Car[] = [
-  {
-    id: "audi-a4-avant-b9",
-    make: "Audi",
-    model: "A4 Avant B9",
-    year: 2019,
-    fuel: "Diesel",
-    price: 179000,
-    publishedAt: "2026-01-02",
-    image: "/images/cars/thumbs/audi-a4-avant-2019-thumb.jpg",
-  },
-  {
-    id: "audi-quattro-2-0",
-    make: "Audi",
-    model: "2.0 quattro",
-    year: 2020,
-    fuel: "Bensin",
-    price: 199000,
-    publishedAt: "2026-01-04",
-    image: "/images/cars/thumbs/audi-a4-avant-b9-thumb.jpg",
-  },
-  {
-    id: "bmw-520d-2022",
-    make: "BMW",
-    model: "520d 2022",
-    year: 2022,
-    fuel: "Diesel",
-    price: 219000,
-    publishedAt: "2026-01-06",
-    image: "/images/cars/thumbs/bmw-520d-2017-thumb.jpg",
-  },
-  {
-    id: "bmw-520d-m-sport",
-    make: "BMW",
-    model: "520d M Sport",
-    year: 2018,
-    fuel: "Diesel",
-    price: 209000,
-    publishedAt: "2026-01-07",
-    image: "/images/cars/thumbs/bmw-520d-2018-thumb.jpg",
-  },
-  {
-    id: "volvo-v60-2019-polestar",
-    make: "Volvo",
-    model: "V60 2019 (Polestar)",
-    year: 2019,
-    fuel: "Bensin",
-    price: 189000,
-    publishedAt: "2026-01-08",
-    image: "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
-  },
-  {
-    id: "volvo-v60-2019-cross-country",
-    make: "Volvo",
-    model: "V60 2019 (Cross Country)",
-    year: 2019,
-    fuel: "Diesel",
-    price: 219000,
-    publishedAt: "2026-01-09",
-    image: "/images/cars/thumbs/volvo-v60-cross-country-thumb.jpg",
-  },
-
-  // CHEAP (< 100 000 kr)
-  {
-    id: "audi-budget-1",
-    make: "Audi",
-    model: "A4 (Budget)",
-    year: 2012,
-    fuel: "Diesel",
-    price: 89000,
-    publishedAt: "2026-01-10",
-    image: "/images/cars/thumbs/audi-a4-avant-2019-thumb.jpg",
-  },
-  {
-    id: "volvo-budget-2",
-    make: "Volvo",
-    model: "V60 (Budget)",
-    year: 2011,
-    fuel: "Bensin",
-    price: 99000,
-    publishedAt: "2026-01-11",
-    image: "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
-  },
-
-  // EXPENSIVE (350 000+ kr, year 2025)
-  {
-    id: "bmw-2025-premium",
-    make: "BMW",
-    model: "520d 2025 (Premium)",
-    year: 2025,
-    fuel: "Hybrid",
-    price: 379000,
-    publishedAt: "2026-01-12",
-    image: "/images/cars/thumbs/bmw-520d-2018-thumb.jpg",
-  },
-  {
-    id: "volvo-2025-electric",
-    make: "Volvo",
-    model: "V60 2025 (El)",
-    year: 2025,
-    fuel: "El",
-    price: 429000,
-    publishedAt: "2026-01-13",
-    image: "/images/cars/thumbs/volvo-v60-cross-country-thumb.jpg",
-  },
-
-  // Extra cars (demo)
-  {
-    id: "audi-extra-1",
-    make: "Audi",
-    model: "A4 Avant (Extra)",
-    year: 2021,
-    fuel: "Hybrid",
-    price: 249000,
-    publishedAt: "2026-01-14",
-    image: "/images/cars/thumbs/audi-a4-avant-b9-thumb.jpg",
-  },
-  {
-    id: "bmw-extra-2",
-    make: "BMW",
-    model: "520d (Extra)",
-    year: 2020,
-    fuel: "Bensin",
-    price: 159000,
-    publishedAt: "2026-01-15",
-    image: "/images/cars/thumbs/bmw-520d-2017-thumb.jpg",
-  },
-];
 
 function formatPriceSEK(n: number) {
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} kr`;
 }
 
+function formatDate(dateString: string) {
+  return dateString.split("T")[0];
+}
+
 type SortValue = "newest" | "priceAsc" | "priceDesc";
 
 export default function KopBilarPage() {
+  const [cars, setCars] = useState<Car[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [make, setMake] = useState<string>("");
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [minPrice, setMinPrice] = useState<string>("");
   const [year, setYear] = useState<string>("");
   const [fuel, setFuel] = useState<string>("");
-
   const [sortBy, setSortBy] = useState<SortValue>("newest");
+
+  useEffect(() => {
+    async function fetchCars() {
+      setIsLoading(true);
+      setErrorMessage("");
+
+      const { data, error } = await supabase
+        .from("cars")
+        .select(
+          `
+          id,
+          title,
+          brand,
+          model,
+          year,
+          fuel_type,
+          price,
+          created_at,
+          is_sold,
+          car_images (
+            image_url,
+            sort_order
+          )
+        `
+        )
+        .eq("is_sold", false)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        setErrorMessage("Kunde inte hämta bilar just nu.");
+        setIsLoading(false);
+        return;
+      }
+
+      const mappedCars: Car[] = ((data as SupabaseCar[]) || []).map((car) => {
+        const sortedImages = [...(car.car_images || [])].sort(
+          (a, b) => a.sort_order - b.sort_order
+        );
+
+        return {
+          id: car.id,
+          make: car.brand,
+          model: car.model,
+          year: car.year,
+          fuel: car.fuel_type,
+          price: car.price,
+          publishedAt: formatDate(car.created_at),
+          image:
+            sortedImages[0]?.image_url ||
+            "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
+        };
+      });
+
+      setCars(mappedCars);
+      setIsLoading(false);
+    }
+
+    fetchCars();
+  }, []);
 
   const makes = useMemo(
     () => Array.from(new Set(cars.map((c) => c.make))).sort(),
-    []
+    [cars]
   );
 
   const years = useMemo(
     () => Array.from(new Set(cars.map((c) => c.year))).sort((a, b) => b - a),
-    []
+    [cars]
   );
 
   const filteredAndSorted = useMemo(() => {
@@ -180,14 +137,16 @@ export default function KopBilarPage() {
     let list = [...cars];
 
     if (make) list = list.filter((c) => c.make === make);
-    if (yearNum !== null && Number.isFinite(yearNum))
+    if (yearNum !== null && Number.isFinite(yearNum)) {
       list = list.filter((c) => c.year === yearNum);
+    }
     if (fuel) list = list.filter((c) => c.fuel === fuel);
-
-    if (max !== null && Number.isFinite(max))
+    if (max !== null && Number.isFinite(max)) {
       list = list.filter((c) => c.price <= max);
-    if (min !== null && Number.isFinite(min))
+    }
+    if (min !== null && Number.isFinite(min)) {
       list = list.filter((c) => c.price >= min);
+    }
 
     if (sortBy === "newest") {
       list.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
@@ -198,7 +157,7 @@ export default function KopBilarPage() {
     }
 
     return list;
-  }, [make, maxPrice, minPrice, year, fuel, sortBy]);
+  }, [cars, make, maxPrice, minPrice, year, fuel, sortBy]);
 
   const resultsCount = filteredAndSorted.length;
 
@@ -211,8 +170,7 @@ export default function KopBilarPage() {
     setSortBy("newest");
   };
 
-  const getCarHref = (carId: string) => {
-    if (carId === "volvo-v60-2019-polestar") return "/car-detail";
+  const getCarHref = () => {
     return "/page-under-develop";
   };
 
@@ -223,7 +181,6 @@ export default function KopBilarPage() {
 
         <section className={styles.panel}>
           <div className={styles.panelInner}>
-            {/* LEFT: FILTER */}
             <aside className={styles.filter}>
               <h2 className={styles.panelTitle}>FILTER</h2>
 
@@ -291,10 +248,10 @@ export default function KopBilarPage() {
                   onChange={(e) => setFuel(e.target.value)}
                 >
                   <option value="">Alla</option>
-                  <option value="Bensin">Bensin</option>
-                  <option value="Diesel">Diesel</option>
-                  <option value="Hybrid">Hybrid</option>
-                  <option value="El">El</option>
+                  <option value="bensin">Bensin</option>
+                  <option value="diesel">Diesel</option>
+                  <option value="hybrid">Hybrid</option>
+                  <option value="el">El</option>
                 </select>
               </div>
 
@@ -307,7 +264,6 @@ export default function KopBilarPage() {
               </button>
             </aside>
 
-            {/* RIGHT: RESULT */}
             <div className={styles.result}>
               <div className={styles.resultHeader}>
                 <h2 className={styles.panelTitle}>RESULTAT</h2>
@@ -330,7 +286,17 @@ export default function KopBilarPage() {
                 </div>
               </div>
 
-              {resultsCount === 0 ? (
+              {isLoading ? (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyTitle}>Laddar...</p>
+                  <p className={styles.emptyText}>Hämtar bilar från Supabase.</p>
+                </div>
+              ) : errorMessage ? (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyTitle}>Något gick fel</p>
+                  <p className={styles.emptyText}>{errorMessage}</p>
+                </div>
+              ) : resultsCount === 0 ? (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyTitle}>Tyvärr!</p>
                   <p className={styles.emptyText}>
@@ -348,7 +314,6 @@ export default function KopBilarPage() {
                 </div>
               ) : (
                 <>
-                  {/* ✅ CHANGED: use resultsGrid so cards fill the whole result box */}
                   <div className={styles.resultsGrid}>
                     {filteredAndSorted.map((car) => (
                       <CarCard
@@ -356,7 +321,7 @@ export default function KopBilarPage() {
                         title={`Model: ${car.make} ${car.model}`}
                         price={formatPriceSEK(car.price)}
                         image={car.image}
-                        href={getCarHref(car.id)}
+                        href={getCarHref()}
                         metaLines={[
                           `Årsmodell: ${car.year}`,
                           `Bränsle: ${car.fuel}`,
