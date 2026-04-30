@@ -17,3 +17,17 @@
 Detta autentiseringssystem gör Bil4You mer produktionsredo genom att möjliggöra säkra användarkonton och skyddade funktioner.
 
 ---
+
+## Ticket #40 – Spara bilannonser till databas
+
+### Vad jag lärde mig
+1. Hur man designar relationsdatabaser för kopplad data (`cars` och `car_images`).
+2. Hur man laddar upp bildfiler till Supabase Storage innan databasposter sparas.
+3. Hur man sparar uppladdade bild-URL:er i en separat bildtabell.
+4. Hur man kopplar en bilannons till flera bilder med foreign keys.
+5. Hur man sparar data steg för steg i databasen och behåller relationer mellan tabeller.
+6. Hur man hämtar relationsdata från Supabase med nästlade `.select()`-queries.
+7. Hur Next.js kräver att externa bilddomäner från Supabase tillåts i `next.config.ts`.
+
+### Varför detta är viktigt
+Denna integration gjorde Bil4You från en statisk frontend-prototyp till en dynamisk fullstack-applikation där riktiga bilannonser kan sparas och visas.
