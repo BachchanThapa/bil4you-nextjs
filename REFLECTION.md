@@ -1,3 +1,5 @@
+🇬🇧 English version available here: [REFLECTION in English](REFLECTION.en.md)
+
 # Bil4You LIA 2 Reflektioner
 
 ---
