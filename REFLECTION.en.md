@@ -17,3 +17,17 @@
 This authentication system makes Bil4You more production-ready by allowing secure user accounts and protected user actions.
 
 ---
+
+## Ticket #40 – Save Car Listings to Database
+
+### What I Learned
+1. How to design relational database tables for connected data (`cars` and `car_images`).
+2. How to upload image files to Supabase Storage before saving database records.
+3. How to store uploaded image URLs separately in a related image table.
+4. How to connect one car listing with multiple images using foreign keys.
+5. How to insert database rows step-by-step while preserving relationships between tables.
+6. How to fetch joined relational data from Supabase using nested `.select()` queries.
+7. How Next.js image optimization requires external Supabase image domains to be whitelisted in `next.config.ts`.
+
+### Why This Is Important
+This database integration transformed Bil4You from a static frontend prototype into a dynamic fullstack application where real user-created car listings can be stored and displayed.
