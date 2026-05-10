@@ -71,16 +71,7 @@ export default function SaljBilPage() {
       return prev.filter((x) => x.id !== id);
     });
   }
-  /*
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
 
-    // For now: just frontend UI (no backend yet).
-    // Later you can send as FormData to an API route.
-    alert("Annons skickad! (Demo – ingen backend kopplad ännu)");
-    backend Supabse connection is taking effect now in LIA 2 stage 2026.04.30
-  }
-*/
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -111,7 +102,20 @@ export default function SaljBilPage() {
       );
       const fuelType = String(formData.get("bransle") || "");
       const transmission = String(formData.get("vaxellada") || "");
+      const version = String(formData.get("version") || "");
+      const color = String(formData.get("color") || "");
+      const bodyType = String(formData.get("bodyType") || "");
+      const registrationNumber = String(
+        formData.get("registrationNumber") || "",
+      );
+      const fuelConsumption = String(formData.get("fuelConsumption") || "");
+      const drivetrain = String(formData.get("drivetrain") || "");
+      const taxYearly = String(formData.get("taxYearly") || "");
 
+      const sellerName = String(formData.get("namn") || "");
+      const sellerPhone = String(formData.get("telefon") || "");
+      const sellerAddress = String(formData.get("sellerAddress") || "");
+      const sellerDescription = String(formData.get("sellerDescription") || "");
       const title = `${brand.toUpperCase()} ${model}`;
 
       const { data: carData, error: carError } = await supabase
@@ -126,8 +130,21 @@ export default function SaljBilPage() {
           fuel_type: fuelType,
           transmission,
           price,
-          description: "Skickad via Sälj bil-formuläret",
-          location: "Karlstad",
+          version,
+          color,
+          body_type: bodyType,
+          registration_number: registrationNumber,
+          fuel_consumption: fuelConsumption,
+          drivetrain,
+          tax_yearly: taxYearly,
+
+          seller_name: sellerName,
+          seller_phone: sellerPhone,
+          seller_address: sellerAddress,
+          seller_description: sellerDescription,
+
+          description: sellerDescription,
+          location: sellerAddress,
         })
         .select("id")
         .single();
@@ -316,6 +333,97 @@ export default function SaljBilPage() {
                     <option value="manuell">Manuell</option>
                   </select>
                 </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="version">
+                    Version:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="version"
+                    name="version"
+                    type="text"
+                    placeholder="t.ex. D3 R-Design"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="color">
+                    Färg:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="color"
+                    name="color"
+                    type="text"
+                    placeholder="t.ex. Vit"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="bodyType">
+                    Karosstyp:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="bodyType"
+                    name="bodyType"
+                    type="text"
+                    placeholder="t.ex. Kombi / SUV"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="registrationNumber">
+                    Regnummer:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="registrationNumber"
+                    name="registrationNumber"
+                    type="text"
+                    placeholder="t.ex. ABC123"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="fuelConsumption">
+                    Förbrukning:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="fuelConsumption"
+                    name="fuelConsumption"
+                    type="text"
+                    placeholder="t.ex. 4,8 l/100km"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="drivetrain">
+                    Drivhjul:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="drivetrain"
+                    name="drivetrain"
+                    type="text"
+                    placeholder="t.ex. Framhjulsdrift"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="taxYearly">
+                    Årlig skatt:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="taxYearly"
+                    name="taxYearly"
+                    type="text"
+                    placeholder="t.ex. 3353 kr"
+                  />
+                </div>
               </section>
 
               {/* RIGHT COLUMN */}
@@ -358,6 +466,33 @@ export default function SaljBilPage() {
                     name="epost"
                     type="email"
                     placeholder="dinmail@exempel.se"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="sellerAddress">
+                    Adress
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="sellerAddress"
+                    name="sellerAddress"
+                    type="text"
+                    placeholder="t.ex. Hejdalsvägen 2, Karlstad"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="sellerDescription">
+                    Beskrivning
+                  </label>
+
+                  <textarea
+                    className={styles.textarea}
+                    id="sellerDescription"
+                    name="sellerDescription"
+                    placeholder="Skriv kort information om bilen eller säljaren..."
+                    rows={5}
                   />
                 </div>
               </section>
@@ -429,7 +564,11 @@ export default function SaljBilPage() {
               </>
             )}
 
-            <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Skickar..." : "Skicka annons"}
             </button>
 
