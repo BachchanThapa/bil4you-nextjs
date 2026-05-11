@@ -81,7 +81,7 @@ export default function KopBilarPage() {
             image_url,
             sort_order
           )
-        `
+        `,
         )
         .eq("is_sold", false)
         .order("created_at", { ascending: false });
@@ -95,7 +95,7 @@ export default function KopBilarPage() {
 
       const mappedCars: Car[] = ((data as SupabaseCar[]) || []).map((car) => {
         const sortedImages = [...(car.car_images || [])].sort(
-          (a, b) => a.sort_order - b.sort_order
+          (a, b) => a.sort_order - b.sort_order,
         );
 
         return {
@@ -121,12 +121,12 @@ export default function KopBilarPage() {
 
   const makes = useMemo(
     () => Array.from(new Set(cars.map((c) => c.make))).sort(),
-    [cars]
+    [cars],
   );
 
   const years = useMemo(
     () => Array.from(new Set(cars.map((c) => c.year))).sort((a, b) => b - a),
-    [cars]
+    [cars],
   );
 
   const filteredAndSorted = useMemo(() => {
@@ -170,8 +170,8 @@ export default function KopBilarPage() {
     setSortBy("newest");
   };
 
-  const getCarHref = () => {
-    return "/page-under-develop";
+  const getCarHref = (id: string) => {
+    return `/kop-bilar/${id}`;
   };
 
   return (
@@ -289,7 +289,9 @@ export default function KopBilarPage() {
               {isLoading ? (
                 <div className={styles.emptyState}>
                   <p className={styles.emptyTitle}>Laddar...</p>
-                  <p className={styles.emptyText}>Hämtar bilar från Supabase.</p>
+                  <p className={styles.emptyText}>
+                    Hämtar bilar från Supabase.
+                  </p>
                 </div>
               ) : errorMessage ? (
                 <div className={styles.emptyState}>
@@ -321,7 +323,7 @@ export default function KopBilarPage() {
                         title={`Model: ${car.make} ${car.model}`}
                         price={formatPriceSEK(car.price)}
                         image={car.image}
-                        href={getCarHref()}
+                        href={getCarHref(car.id)}
                         metaLines={[
                           `Årsmodell: ${car.year}`,
                           `Bränsle: ${car.fuel}`,
