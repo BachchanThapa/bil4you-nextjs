@@ -1,0 +1,622 @@
+.page {
+  background: #f8fafc;
+  padding: 28px 0 64px;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+  margin-bottom: 14px;
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  a {
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Gallery */
+.gallerySection {
+  margin-bottom: 22px;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 12px;
+  min-height: 420px;
+}
+
+.galleryMain,
+.gallerySmall {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.galleryMain {
+  min-height: 420px;
+}
+
+.gallerySide {
+  display: grid;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
+  min-height: 420px;
+}
+
+.gallerySmall {
+  min-height: 132px;
+}
+
+.imgCover {
+  object-fit: cover;
+}
+
+/* thumbs row */
+.thumbsRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.thumbBtn {
+  border: 1px solid #e2e8f0;
+  background: white;
+  padding: 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.thumbBtn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.thumbImg {
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Header: title + price */
+.header {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.title {
+  font-size: 44px;
+  line-height: 1.05;
+  margin: 0;
+  color: #0f172a;
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  margin: 10px 0 14px;
+  color: #334155;
+  max-width: 72ch;
+}
+
+/* Chips */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chip {
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e3a8a;
+  border: 1px solid #e0e7ff;
+}
+
+/* Price card */
+.priceCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+}
+
+.price {
+  font-size: 34px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.priceNote {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* Main content */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 18px;
+  align-items: start;
+}
+
+.block {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.04);
+  margin-bottom: 16px;
+}
+
+.h2 {
+  font-size: 18px;
+  margin: 0 0 14px;
+  color: #0f172a;
+}
+
+.h3 {
+  font-size: 15px;
+  margin: 14px 0 8px;
+  color: #0f172a;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+  color: #334155;
+
+  li {
+    margin: 6px 0;
+  }
+}
+
+/* Quick stat cards */
+.quickStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.statCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fbfdff;
+}
+
+.statValue {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.statLabel {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Specs (DL as a table) */
+.specs {
+  margin: 0;
+}
+
+.specRow {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #eef2f7;
+
+  dt {
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  dd {
+    margin: 0;
+    color: #0f172a;
+    font-weight: 600;
+  }
+}
+
+/* Similar cars */
+.similarGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.similarCard {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  text-decoration: none;
+  background: #fbfdff;
+}
+
+.similarCard:hover {
+  border-color: #cbd5e1;
+}
+
+.similarImgWrap {
+  position: relative;
+  width: 96px;
+  height: 72px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e2e8f0;
+}
+
+.similarText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.similarTitle {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.similarPrice {
+  color: #334155;
+  font-size: 13px;
+}
+
+.similarLink {
+  margin-top: 4px;
+  color: #2563eb;
+  font-size: 13px;
+}
+
+
+.stickyCard {
+  position: sticky;
+  top: 88px; /* safe under header; adjust later if needed */
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 12px 36px rgba(2, 6, 23, 0.08);
+}
+
+.sellerHeader {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eef2f7;
+  margin-bottom: 12px;
+}
+
+.sellerLogo {
+  width: fit-content;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  color: #0f172a;
+}
+
+.sellerName {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.sellerDesc {
+  color: #334155;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.contactBox {
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 14px;
+  background: #fbfdff;
+}
+
+.contactRow {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.contactLabel {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.contactValue {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.contactAction {
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.contactAction:hover {
+  text-decoration: underline;
+}
+
+.hoursTitle {
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.hoursList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.hoursRow {
+  display: flex;
+  justify-content: space-between;
+  color: #334155;
+  font-size: 13px;
+}
+
+.ctaBtn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  background: #111827;
+  color: white;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+.ctaBtn:hover {
+  opacity: 0.92;
+}
+
+.secondaryBtn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  margin-top: 10px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #0f172a;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 800;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .header {
+    grid-template-columns: 1fr;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .stickyCard {
+    position: static; /* on mobile, sticky usually feels annoying */
+    top: auto;
+  }
+
+  .galleryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .galleryMain {
+    min-height: 300px;
+  }
+
+  .gallerySide {
+    min-height: auto;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: none;
+  }
+
+  .gallerySmall {
+    min-height: 110px;
+  }
+
+  .similarGrid {
+    grid-template-columns: 1fr;
+  }
+}
+// More responsiveness
+/* ✅ Extra small screens (phones) */
+@media (max-width: 520px) {
+  .page {
+    padding: 16px 0 40px;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  /* Breadcrumbs smaller */
+  .breadcrumbs ol {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  /* Gallery: force stacked, no side column */
+  .galleryGrid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .galleryMain {
+    min-height: 260px;
+    border-radius: 14px;
+  }
+
+  /* Side images become a row of 3 */
+  .gallerySide {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: none;
+    min-height: auto;
+  }
+
+  .gallerySmall {
+    min-height: 80px;
+    border-radius: 14px;
+  }
+
+  /* Title + price */
+  .header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 34px;
+    line-height: 1.05;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    margin: 8px 0 12px;
+  }
+
+  .priceCard {
+    width: 100%;
+    padding: 14px;
+  }
+
+  .price {
+    font-size: 28px;
+  }
+
+  /* Main grid becomes one column */
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .block {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  /* Quick stats: 2 columns instead of 3 */
+  .quickStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Specs: label/value tighter */
+  .specRow {
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+  }
+
+  /* Similar cars already become 1 column at 900px, keep it */
+}
+
+/* ✅ Super tiny phones (like 320px) */
+@media (max-width: 360px) {
+  .title {
+    font-size: 30px;
+  }
+
+  .galleryMain {
+    min-height: 220px;
+  }
+
+  .gallerySmall {
+    min-height: 70px;
+  }
+
+  .quickStats {
+    grid-template-columns: 1fr; /* stack stats if 2-col feels tight */
+  }
+
+  .specRow {
+    grid-template-columns: 1fr;
+    gap: 6px;
+
+    dt {
+      font-size: 12px;
+    }
+
+    dd {
+      font-size: 13px;
+    }
+  }
+}
+@media (max-width: 360px) {
+  /* FORCE gallery to stack on tiny screens */
+  .galleryGrid {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+
+  /* Put the 3 small images in a row UNDER the main image */
+  .gallerySide {
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-rows: none !important;
+    min-height: auto !important;
+  }
+
+  /* Make the main image box shorter so it's not “zoomed” */
+  .galleryMain {
+    min-height: 170px !important;
+  }
+
+  .gallerySmall {
+    min-height: 70px !important;
+  }
+
+  /* ✅ THIS is the big visual fix:
+     show whole car instead of cropping */
+  .imgCover {
+    object-fit: contain !important;
+    background: white;
+  }
+}
