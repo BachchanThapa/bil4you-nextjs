@@ -91,7 +91,7 @@ export default function SaljBilPage() {
       const formElement = e.target as HTMLFormElement;
       const formData = new FormData(formElement);
 
-      const brand = String(formData.get("marke") || "");
+      const brand = String(formData.get("marke") || "").trim();
       const model = String(formData.get("modell") || "");
       const year = Number(formData.get("arsmodell"));
       const mileage = Number(
@@ -217,20 +217,14 @@ export default function SaljBilPage() {
                   <label className={styles.label} htmlFor="marke">
                     Märke:
                   </label>
-                  <select
+                  <input
                     className={styles.input}
                     id="marke"
                     name="marke"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Volvo / BMW ...
-                    </option>
-                    <option value="volvo">Volvo</option>
-                    <option value="bmw">BMW</option>
-                    <option value="audi">Audi</option>
-                    <option value="vw">Volkswagen</option>
-                  </select>
+                    type="text"
+                    placeholder="t.ex. Volvo / BMW / Toyota / Kia"
+                    required
+                  />
                 </div>
 
                 <div className={styles.field}>
