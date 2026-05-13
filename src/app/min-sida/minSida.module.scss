@@ -227,7 +227,8 @@
 }
 
 .iconBox,
-.iconBoxGreen {
+.iconBoxGreen,
+.iconBoxHeart {
   width: 84px;
   height: 84px;
   border-radius: 22px;
@@ -246,6 +247,12 @@
   font-weight: 800;
 }
 
+.iconBoxHeart {
+  background: #fee2e2;
+  color: #ef4444;
+  font-weight: 800;
+}
+
 .sellBox {
   margin-top: 2.6rem;
   padding: 1.6rem 2rem;
@@ -256,6 +263,15 @@
   grid-template-columns: auto 1fr auto;
   gap: 1.6rem;
   align-items: center;
+
+  text-decoration: none;
+  color: inherit;
+  transition: 0.2s ease;
+}
+
+.sellBox:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(245, 158, 11, 0.18);
 }
 
 .moneyIcon {
@@ -390,7 +406,8 @@
   }
 
   .iconBox,
-  .iconBoxGreen {
+  .iconBoxGreen,
+  .iconBoxHeart {
     margin: 0 auto;
   }
 }
