@@ -37,6 +37,7 @@ type Car = {
   image: string;
   daysLeft: number;
   isExpired: boolean;
+  isSold: boolean;
 };
 
 type SortValue = "newest" | "priceAsc" | "priceDesc";
@@ -137,6 +138,7 @@ export default function MinaAnnonserPage() {
           publishedAt: formatDate(car.created_at),
           daysLeft: expiryInfo.daysLeft,
           isExpired: expiryInfo.isExpired,
+          isSold: car.is_sold,
           image:
             sortedImages[0]?.image_url ||
             "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
@@ -360,9 +362,11 @@ export default function MinaAnnonserPage() {
                           `Årsmodell: ${car.year}`,
                           `Bränsle: ${car.fuel}`,
                           `Publicerad: ${car.publishedAt}`,
-                          car.isExpired
-                            ? "Status: Annonsen har gått ut"
-                            : `Status: Aktiv annons · ${car.daysLeft} dagar kvar`,
+                          car.isSold
+                            ? "Status: Såld"
+                            : car.isExpired
+                              ? "Status: Annonsen har gått ut"
+                              : `Status: Aktiv annons · ${car.daysLeft} dagar kvar`,
                         ]}
                         fluid
                       />
