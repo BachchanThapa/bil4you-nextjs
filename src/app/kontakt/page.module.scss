@@ -85,6 +85,31 @@
   gap: 14px;
 }
 
+.carInterestBox {
+  width: 100%;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #14532d;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.carInterestBox strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.carInterestBox p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.carInterestBox span {
+  font-weight: 700;
+}
+
 .field {
   display: grid;
   grid-template-columns: 120px 1fr;
@@ -161,4 +186,3 @@
     width: 100%;
   }
 }
-

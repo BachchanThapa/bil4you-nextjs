@@ -277,8 +277,18 @@ export default async function CarDetailByIdPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <Link href="/kontakt" className={styles.ctaBtn}>
-                Kontakta oss
+              <Link
+                href={{
+                  pathname: "/kontakt",
+                  query: {
+                    carId: car.id,
+                    car: car.title,
+                    price: car.price,
+                  },
+                }}
+                className={styles.ctaBtn}
+              >
+                Jag är intresserad
               </Link>
 
               <Link href="/kop-bilar" className={styles.secondaryBtn}>

@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "./header.module.scss";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     async function checkUser() {
@@ -36,6 +37,14 @@ export default function Header() {
     router.push("/login");
   }
 
+  function getLinkClass(href: string) {
+    if (href === "/kop-bilar" && pathname.startsWith("/kop-bilar")) {
+      return styles.activeLink;
+    }
+
+    return pathname === href ? styles.activeLink : "";
+  }
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -52,19 +61,37 @@ export default function Header() {
         </Link>
 
         <nav className={styles.nav} aria-label="Main navigation">
-          <Link href="/">Hem</Link>
-          <Link href="/kop-bilar">Köp bilar</Link>
-          <Link href="/salj-bil">Sälj bil</Link>
-          <Link href="/kontakt">Kontakt</Link>
+          <Link href="/" className={getLinkClass("/")}>
+            Hem
+          </Link>
+
+          <Link href="/kop-bilar" className={getLinkClass("/kop-bilar")}>
+            Köp bilar
+          </Link>
+
+          <Link href="/salj-bil" className={getLinkClass("/salj-bil")}>
+            Sälj bil
+          </Link>
+
+          <Link href="/kontakt" className={getLinkClass("/kontakt")}>
+            Kontakt
+          </Link>
 
           {!isLoggedIn ? (
             <>
-              <Link href="/login">Logga in</Link>
-              <Link href="/register">Registrera</Link>
+              <Link href="/login" className={getLinkClass("/login")}>
+                Logga in
+              </Link>
+
+              <Link href="/register" className={getLinkClass("/register")}>
+                Registrera
+              </Link>
             </>
           ) : (
             <>
-              <Link href="/min-sida">Min sida</Link>
+              <Link href="/min-sida" className={getLinkClass("/min-sida")}>
+                Min sida
+              </Link>
 
               <button onClick={handleLogout} className={styles.logoutButton}>
                 Logga ut

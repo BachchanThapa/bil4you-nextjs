@@ -1,8 +1,28 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.scss";
 
 export default function KontaktPage() {
+  const searchParams = useSearchParams();
+
+  const carId = searchParams.get("carId");
+  const car = searchParams.get("car");
+  const price = searchParams.get("price");
+
+  const hasCarInterest = Boolean(carId && car);
+
+  const prefilledMessage = hasCarInterest
+    ? `Hej Bil4You,
+
+    Jag är intresserad av ${car}.
+    Pris: ${Number(price).toLocaleString("sv-SE")} kr
+    Annons-ID: ${carId}
+
+    Kontakta mig gärna.
+
+    Vänliga hälsningar`
+    : "";
   function onSubmit(e: { preventDefault: () => void }) {
     e.preventDefault();
     alert("Meddelandet skickat! (Demo – ingen backend ännu)");
@@ -20,7 +40,10 @@ export default function KontaktPage() {
             <div className={styles.mapCol}>
               <h2 className={styles.sectionTitle}>KARTA</h2>
 
-              <div className={styles.mapFrame} aria-label="Karta Karlstad, Sverige">
+              <div
+                className={styles.mapFrame}
+                aria-label="Karta Karlstad, Sverige"
+              >
                 <iframe
                   title="Karta Karlstad, Sverige"
                   src="https://www.google.com/maps?q=Karlstad%2C%20Sweden&z=13&output=embed"
@@ -57,6 +80,15 @@ export default function KontaktPage() {
           <h2 className={styles.messageTitle}>SKICKA MEDDELANDE</h2>
 
           <form className={styles.form} onSubmit={onSubmit}>
+            {hasCarInterest && (
+              <div className={styles.carInterestBox}>
+                <strong>Bilförfrågan</strong>
+                <p>
+                  Du skickar meddelande om: <span>{car}</span>
+                </p>
+              </div>
+            )}
+
             <div className={styles.field}>
               <label className={styles.fieldLabel} htmlFor="namn">
                 Namn
@@ -105,6 +137,7 @@ export default function KontaktPage() {
                 id="meddelande"
                 name="meddelande"
                 placeholder="Skriv här..."
+                defaultValue={prefilledMessage}
               />
             </div>
 
@@ -112,7 +145,9 @@ export default function KontaktPage() {
               Skicka
             </button>
 
-            <p className={styles.helperText}>Vi återkommer så snart som möjligt.</p>
+            <p className={styles.helperText}>
+              Vi återkommer så snart som möjligt.
+            </p>
           </form>
         </section>
       </div>
