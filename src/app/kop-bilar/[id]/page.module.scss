@@ -307,7 +307,6 @@
   font-size: 13px;
 }
 
-
 .stickyCard {
   position: sticky;
   top: 88px; /* safe under header; adjust later if needed */
@@ -406,17 +405,25 @@
 
 .ctaBtn {
   display: block;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #ffffff;
+  font-weight: 800;
   text-align: center;
   text-decoration: none;
-  background: #111827;
-  color: white;
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(34, 197, 94, 0.25);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .ctaBtn:hover {
-  opacity: 0.92;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  box-shadow: 0 14px 28px rgba(34, 197, 94, 0.32);
 }
 
 .secondaryBtn {
