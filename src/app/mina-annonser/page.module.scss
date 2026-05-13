@@ -1,0 +1,285 @@
+.page {
+  padding: 32px 0 64px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 18px;
+}
+
+.panel {
+  background: transparent;
+}
+
+/* OUTER PANEL BOX */
+.panelInner {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 18px;
+
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.panelTitle {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-text);
+  margin: 0 0 14px;
+  text-transform: uppercase;
+}
+
+/* LEFT FILTER */
+.filter {
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.field {
+  display: grid;
+
+  /* label column + control column */
+  grid-template-columns: 100px 1fr;
+  gap: 10px;
+
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.label {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+/* ✅ THIS is where you control input width */
+.control {
+  height: 42px;
+  width: 180px; /* smaller, production-ish */
+  max-width: 100%;
+
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #f3f4f6;
+  padding: 0 12px;
+
+  font-size: 14px;
+  color: var(--color-text);
+  outline: none;
+}
+
+.control:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.linkButton {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-size: 14px;
+  padding: 10px 0 0;
+  cursor: pointer;
+}
+
+/* RIGHT RESULT */
+.result {
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.resultHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
+}
+
+.resultRight {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sortLabel {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.sortSelect {
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #f3f4f6;
+  padding: 0 10px;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.countText {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ✅ FIXED: cards now fill the whole result box (no empty right space) */
+.resultsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.resultsGrid > * {
+  width: 100%;
+}
+
+/* keep your link area tight */
+.moreRow {
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+.moreLink {
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+/* ✅ Empty state */
+.emptyState {
+  padding: 28px 10px;
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.emptyText {
+  margin: 0 auto 14px;
+  max-width: 520px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.emptyButton {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #f3f4f6;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .panelInner {
+    grid-template-columns: 1fr;
+  }
+
+  .control {
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .resultsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    padding: 24px 0 40px;
+  }
+
+  .panelInner {
+    padding: 14px;
+  }
+
+  /* stack label + control */
+  .field {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .control {
+    width: 100%;
+  }
+
+  /* result header should wrap nicely */
+  .resultHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .resultRight {
+    width: 100%;
+    justify-items: start;
+  }
+
+  .sortRow {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sortSelect {
+    width: 160px;
+    max-width: 100%;
+  }
+
+  /* cards full width on mobile */
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 520px) {
+  /* Make the outer wrapper invisible on mobile */
+  .panelInner {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    gap: 12px; /* keep nice spacing between Filter and Result */
+  }
+
+  /* Keep filter + result as the actual "cards" */
+  .filter,
+  .result {
+    border-radius: 12px;
+  }
+}
