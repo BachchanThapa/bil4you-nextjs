@@ -76,10 +76,10 @@ export default function MinSidaPage() {
         </div>
 
         <div className={styles.intro}>
-          <h2>Din nästa bilaffär är närmare än du tror!</h2>
+          <h2>Din bilresa börjar här!</h2>
           <p>
-            Hantera dina annonser, lägg upp en ny bil och följ din resa mot en
-            lyckad försäljning.
+            Hantera dina egna annonser, spara favoritbilar och fortsätt enkelt
+            där du slutade.
           </p>
         </div>
 
@@ -93,17 +93,17 @@ export default function MinSidaPage() {
             <b>›</b>
           </Link>
 
-          <Link className={styles.actionCard} href="/salj-bil">
-            <span className={styles.iconBoxGreen}>＋</span>
+          <Link className={styles.actionCard} href="/favoriter">
+            <span className={styles.iconBoxHeart}>♥</span>
             <span>
-              <strong>Sälj bil</strong>
-              <small>Lägg upp en ny bilannons och nå tusentals köpare.</small>
+              <strong>Mina favoriter</strong>
+              <small>Se bilarna du har sparat och vill titta närmare på.</small>
             </span>
             <b>›</b>
           </Link>
         </div>
 
-        <div className={styles.sellBox}>
+        <Link className={styles.sellBox} href="/salj-bil">
           <div className={styles.moneyIcon}>💸</div>
 
           <div>
@@ -115,9 +115,9 @@ export default function MinSidaPage() {
           </div>
 
           <span className={styles.successText}>
-            Lycka till – din nästa affär väntar! 🎉
+            Gå till Sälj bil 🎉
           </span>
-        </div>
+        </Link>
 
         <button className={styles.logoutButton} onClick={handleLogout}>
           Logga ut

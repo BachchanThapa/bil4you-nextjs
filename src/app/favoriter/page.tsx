@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import Container from "@/components/Container";
 import CarCard from "@/components/CarCard/CarCard";
@@ -37,6 +38,10 @@ type Car = {
   image: string;
 };
 
+type SortValue = "newest" | "priceAsc" | "priceDesc";
+
+const FAVORITES_KEY = "bil4you-favorites";
+
 function formatPriceSEK(n: number) {
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} kr`;
 }
@@ -45,9 +50,21 @@ function formatDate(dateString: string) {
   return dateString.split("T")[0];
 }
 
-type SortValue = "newest" | "priceAsc" | "priceDesc";
+function getStoredFavorites() {
+  if (typeof window === "undefined") return [];
 
-export default function KopBilarPage() {
+  const saved = localStorage.getItem(FAVORITES_KEY);
+
+  if (!saved) return [];
+
+  try {
+    return JSON.parse(saved) as string[];
+  } catch {
+    return [];
+  }
+}
+
+export default function FavoriterPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -60,9 +77,17 @@ export default function KopBilarPage() {
   const [sortBy, setSortBy] = useState<SortValue>("newest");
 
   useEffect(() => {
-    async function fetchCars() {
+    async function fetchFavoriteCars() {
       setIsLoading(true);
       setErrorMessage("");
+
+      const favoriteIds = getStoredFavorites();
+
+      if (favoriteIds.length === 0) {
+        setCars([]);
+        setIsLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("cars")
@@ -83,12 +108,13 @@ export default function KopBilarPage() {
           )
         `,
         )
+        .in("id", favoriteIds)
         .eq("is_sold", false)
         .order("created_at", { ascending: false });
 
       if (error) {
         console.error(error);
-        setErrorMessage("Kunde inte hämta bilar just nu.");
+        setErrorMessage("Kunde inte hämta dina favoriter just nu.");
         setIsLoading(false);
         return;
       }
@@ -116,7 +142,17 @@ export default function KopBilarPage() {
       setIsLoading(false);
     }
 
-    fetchCars();
+    fetchFavoriteCars();
+
+    function refreshFavorites() {
+      fetchFavoriteCars();
+    }
+
+    window.addEventListener("focus", refreshFavorites);
+
+    return () => {
+      window.removeEventListener("focus", refreshFavorites);
+    };
   }, []);
 
   const makes = useMemo(
@@ -137,13 +173,17 @@ export default function KopBilarPage() {
     let list = [...cars];
 
     if (make) list = list.filter((c) => c.make === make);
+
     if (yearNum !== null && Number.isFinite(yearNum)) {
       list = list.filter((c) => c.year === yearNum);
     }
+
     if (fuel) list = list.filter((c) => c.fuel === fuel);
+
     if (max !== null && Number.isFinite(max)) {
       list = list.filter((c) => c.price <= max);
     }
+
     if (min !== null && Number.isFinite(min)) {
       list = list.filter((c) => c.price >= min);
     }
@@ -177,7 +217,7 @@ export default function KopBilarPage() {
   return (
     <div className={styles.page} id="top">
       <Container>
-        <h1 className={styles.pageTitle}>Köp bilar</h1>
+        <h1 className={styles.pageTitle}>Mina favoriter</h1>
 
         <section className={styles.panel}>
           <div className={styles.panelInner}>
@@ -266,7 +306,7 @@ export default function KopBilarPage() {
 
             <div className={styles.result}>
               <div className={styles.resultHeader}>
-                <h2 className={styles.panelTitle}>RESULTAT</h2>
+                <h2 className={styles.panelTitle}>FAVORITER</h2>
 
                 <div className={styles.resultRight}>
                   <div className={styles.sortRow}>
@@ -282,7 +322,9 @@ export default function KopBilarPage() {
                     </select>
                   </div>
 
-                  <p className={styles.countText}>Visar {resultsCount} bilar</p>
+                  <p className={styles.countText}>
+                    Visar {resultsCount} favoriter
+                  </p>
                 </div>
               </div>
 
@@ -290,7 +332,7 @@ export default function KopBilarPage() {
                 <div className={styles.emptyState}>
                   <p className={styles.emptyTitle}>Laddar...</p>
                   <p className={styles.emptyText}>
-                    Hämtar bilar från Supabase.
+                    Hämtar dina sparade favoritbilar.
                   </p>
                 </div>
               ) : errorMessage ? (
@@ -300,19 +342,14 @@ export default function KopBilarPage() {
                 </div>
               ) : resultsCount === 0 ? (
                 <div className={styles.emptyState}>
-                  <p className={styles.emptyTitle}>Tyvärr!</p>
+                  <p className={styles.emptyTitle}>Inga favoriter ännu</p>
                   <p className={styles.emptyText}>
-                    Just nu har vi inga bilar som matchar din sökning. Prova att
-                    ändra filter eller välj ett annat märke.
+                    Klicka på hjärtat på en bil för att spara den här.
                   </p>
 
-                  <button
-                    type="button"
-                    className={styles.emptyButton}
-                    onClick={resetAll}
-                  >
-                    Rensa filter
-                  </button>
+                  <Link className={styles.moreLink} href="/kop-bilar">
+                    Gå till Köp bilar
+                  </Link>
                 </div>
               ) : (
                 <>
@@ -337,7 +374,7 @@ export default function KopBilarPage() {
 
                   <div className={styles.moreRow}>
                     <a className={styles.moreLink} href="#top">
-                      Visa fler bilar...
+                      Visa fler favoriter...
                     </a>
                   </div>
                 </>
