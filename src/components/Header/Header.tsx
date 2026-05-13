@@ -22,7 +22,7 @@ export default function Header() {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setIsLoggedIn(!!session);
-      }
+      },
     );
 
     return () => {
@@ -63,9 +63,13 @@ export default function Header() {
               <Link href="/register">Registrera</Link>
             </>
           ) : (
-            <button onClick={handleLogout} className={styles.logoutButton}>
-              Logga ut
-            </button>
+            <>
+              <Link href="/min-sida">Min sida</Link>
+
+              <button onClick={handleLogout} className={styles.logoutButton}>
+                Logga ut
+              </button>
+            </>
           )}
         </nav>
       </div>
