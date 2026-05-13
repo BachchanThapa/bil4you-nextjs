@@ -1,0 +1,77 @@
+.page {
+  min-height: calc(100vh - 90px);
+  background: #f5f7fa;
+  padding: 4rem 1.5rem;
+}
+
+.card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.text {
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.email {
+  display: inline-block;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.actions {
+  display: grid;
+  gap: 1rem;
+}
+
+.actionCard {
+  display: block;
+  padding: 1rem 1.2rem;
+  border-radius: 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: #111827;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.actionCard:hover {
+  background: #111827;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.logoutButton {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.2rem;
+  border: none;
+  border-radius: 14px;
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: #b91c1c;
+}
+
+.loginLink {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #111827;
+  font-weight: 700;
+}
