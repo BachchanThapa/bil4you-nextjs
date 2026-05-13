@@ -35,6 +35,8 @@ type Car = {
   price: number;
   publishedAt: string;
   image: string;
+  daysLeft: number;
+  isExpired: boolean;
 };
 
 type SortValue = "newest" | "priceAsc" | "priceDesc";
@@ -45,6 +47,21 @@ function formatPriceSEK(n: number) {
 
 function formatDate(dateString: string) {
   return dateString.split("T")[0];
+}
+
+function getAdExpiryInfo(createdAt: string) {
+  const createdDate = new Date(createdAt);
+  const expiryDate = new Date(createdDate);
+  expiryDate.setDate(createdDate.getDate() + 45);
+
+  const today = new Date();
+  const difference = expiryDate.getTime() - today.getTime();
+  const daysLeft = Math.ceil(difference / (1000 * 60 * 60 * 24));
+
+  return {
+    daysLeft,
+    isExpired: daysLeft <= 0,
+  };
 }
 
 export default function MinaAnnonserPage() {
@@ -108,6 +125,8 @@ export default function MinaAnnonserPage() {
           (a, b) => a.sort_order - b.sort_order,
         );
 
+        const expiryInfo = getAdExpiryInfo(car.created_at);
+
         return {
           id: car.id,
           make: car.brand,
@@ -116,6 +135,8 @@ export default function MinaAnnonserPage() {
           fuel: car.fuel_type,
           price: car.price,
           publishedAt: formatDate(car.created_at),
+          daysLeft: expiryInfo.daysLeft,
+          isExpired: expiryInfo.isExpired,
           image:
             sortedImages[0]?.image_url ||
             "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
@@ -339,6 +360,9 @@ export default function MinaAnnonserPage() {
                           `Årsmodell: ${car.year}`,
                           `Bränsle: ${car.fuel}`,
                           `Publicerad: ${car.publishedAt}`,
+                          car.isExpired
+                            ? "Status: Annonsen har gått ut"
+                            : `Status: Aktiv annons · ${car.daysLeft} dagar kvar`,
                         ]}
                         fluid
                       />
