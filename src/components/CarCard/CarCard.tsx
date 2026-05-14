@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 import styles from "./carCard.module.scss";
 
 type CarCardProps = {
@@ -23,10 +24,16 @@ type CarCardProps = {
 
 const FAVORITES_KEY = "bil4you-favorites";
 
-function getStoredFavorites() {
+function getFavoritesKey(userId?: string) {
+  // Each logged-in user gets a separate favorite list in localStorage.
+  // This prevents two users on the same browser from sharing favorites.
+  return userId ? `${FAVORITES_KEY}-${userId}` : `${FAVORITES_KEY}-guest`;
+}
+
+function getStoredFavorites(storageKey: string) {
   if (typeof window === "undefined") return [];
 
-  const saved = localStorage.getItem(FAVORITES_KEY);
+  const saved = localStorage.getItem(storageKey);
 
   if (!saved) return [];
 
@@ -42,6 +49,7 @@ function getStoredFavorites() {
   - CarCard is a reusable UI component.
   - It can now also handle a simple favorite button.
   - Favorites are saved in localStorage for this first version.
+  - The favorite key is based on logged-in user id so users do not share favorites.
 */
 export default function CarCard({
   title,
@@ -53,18 +61,28 @@ export default function CarCard({
   fluid = false,
 }: CarCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [favoritesKey, setFavoritesKey] = useState(getFavoritesKey());
 
   useEffect(() => {
-    if (!carId) return;
+    async function loadFavoritesForCurrentUser() {
+      const { data } = await supabase.auth.getUser();
+      const userKey = getFavoritesKey(data.user?.id);
 
-    const favorites = getStoredFavorites();
-    setIsFavorite(favorites.includes(carId));
+      setFavoritesKey(userKey);
+
+      if (!carId) return;
+
+      const favorites = getStoredFavorites(userKey);
+      setIsFavorite(favorites.includes(carId));
+    }
+
+    loadFavoritesForCurrentUser();
   }, [carId]);
 
   function handleFavoriteClick() {
     if (!carId) return;
 
-    const favorites = getStoredFavorites();
+    const favorites = getStoredFavorites(favoritesKey);
 
     let updatedFavorites: string[];
 
@@ -76,7 +94,7 @@ export default function CarCard({
       setIsFavorite(true);
     }
 
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
+    localStorage.setItem(favoritesKey, JSON.stringify(updatedFavorites));
   }
 
   return (

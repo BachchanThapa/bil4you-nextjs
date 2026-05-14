@@ -41,6 +41,9 @@ type Car = {
 type SortValue = "newest" | "priceAsc" | "priceDesc";
 
 const FAVORITES_KEY = "bil4you-favorites";
+function getFavoritesKey(userId?: string) {
+  return userId ? `${FAVORITES_KEY}-${userId}` : `${FAVORITES_KEY}-guest`;
+}
 
 function formatPriceSEK(n: number) {
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} kr`;
@@ -50,10 +53,10 @@ function formatDate(dateString: string) {
   return dateString.split("T")[0];
 }
 
-function getStoredFavorites() {
+function getStoredFavorites(storageKey: string) {
   if (typeof window === "undefined") return [];
 
-  const saved = localStorage.getItem(FAVORITES_KEY);
+  const saved = localStorage.getItem(storageKey);
 
   if (!saved) return [];
 
@@ -81,7 +84,9 @@ export default function FavoriterPage() {
       setIsLoading(true);
       setErrorMessage("");
 
-      const favoriteIds = getStoredFavorites();
+      const { data: userData } = await supabase.auth.getUser();
+      const favoritesKey = getFavoritesKey(userData.user?.id);
+      const favoriteIds = getStoredFavorites(favoritesKey);
 
       if (favoriteIds.length === 0) {
         setCars([]);
