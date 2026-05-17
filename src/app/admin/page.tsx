@@ -147,7 +147,7 @@ export default function AdminPage() {
               Användare
             </a>
 
-            <a>Meddelanden</a>
+            <Link href="/admin/meddelanden">Meddelanden</Link>
             <a>Statistik</a>
           </nav>
 
@@ -217,6 +217,7 @@ export default function AdminPage() {
                     <Link href="/salj-bil">+ Lägg till bil</Link>
                     <Link href="/kop-bilar">Se alla bilar</Link>
                     <Link href="/mina-annonser">Hantera annonser</Link>
+                    <Link href="/admin/meddelanden">Se meddelanden</Link>
                   </div>
                 </article>
 

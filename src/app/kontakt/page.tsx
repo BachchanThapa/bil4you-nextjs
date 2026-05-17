@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import styles from "./page.module.scss";
 
 export default function KontaktPage() {
@@ -23,9 +24,36 @@ export default function KontaktPage() {
 
     Vänliga hälsningar`
     : "";
-  function onSubmit(e: { preventDefault: () => void }) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    alert("Meddelandet skickat! (Demo – ingen backend ännu)");
+
+    const formData = new FormData(e.currentTarget);
+
+    const name = String(formData.get("namn") || "");
+    const phone = String(formData.get("telefon") || "");
+    const email = String(formData.get("epost") || "");
+    const message = String(formData.get("meddelande") || "");
+
+    const subject = hasCarInterest
+      ? `Bilförfrågan: ${car}`
+      : "Meddelande från kontaktsidan";
+
+    const { error } = await supabase.from("messages").insert({
+      name,
+      phone,
+      email,
+      subject,
+      message,
+    });
+
+    if (error) {
+      alert("Något gick fel. Försök igen.");
+      console.error(error);
+      return;
+    }
+
+    alert("Meddelandet skickat!");
+    e.currentTarget.reset();
   }
 
   return (
