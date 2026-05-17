@@ -31,7 +31,7 @@ export default function RegisterPage() {
 
     if (!isPasswordValid(password)) {
       setMessage(
-        "Lösenordet måste vara minst 6 tecken och innehålla en stor bokstav, en liten bokstav och en siffra."
+        "Lösenordet måste vara minst 6 tecken och innehålla en stor bokstav, en liten bokstav och en siffra.",
       );
       setMessageType("error");
       return;
@@ -42,15 +42,20 @@ export default function RegisterPage() {
       password,
     });
 
-    if (error) {
-      setMessage("Kontot kunde inte skapas. E-posten kan redan vara registrerad.");
+    if (error || !data.user) {
+      setMessage(
+        "Kontot kunde inte skapas. E-posten kan redan vara registrerad.",
+      );
       setMessageType("error");
       return;
     }
 
-    setMessage(
-      "Om e-postadressen är ny har kontot skapats. Kontrollera din e-post och logga sedan in."
-    );
+    /*
+  The profiles row is created automatically by a Supabase database trigger.
+  That keeps registration cleaner and makes every new user visible in admin stats.
+*/
+
+    setMessage("Kontot har skapats. Du kan nu logga in och använda Min sida.");
     setMessageType("success");
 
     setTimeout(() => {
@@ -63,13 +68,16 @@ export default function RegisterPage() {
       <section className={styles.card}>
         <h1 className={styles.title}>Registrera</h1>
         <p className={styles.text}>
-          Skapa ett konto för att kunna sälja din bil och använda personliga funktioner.
+          Skapa ett konto för att kunna sälja din bil och använda personliga
+          funktioner.
         </p>
 
         {message && (
           <p
             className={
-              messageType === "success" ? styles.successMessage : styles.errorMessage
+              messageType === "success"
+                ? styles.successMessage
+                : styles.errorMessage
             }
           >
             {message}
@@ -111,9 +119,10 @@ export default function RegisterPage() {
             Skapa konto
           </button>
         </form>
-          <p className={styles.switchText}>
-            Har du redan ett konto? <a href="/login">Logga in här</a>
-          </p>
+
+        <p className={styles.switchText}>
+          Har du redan ett konto? <a href="/login">Logga in här</a>
+        </p>
       </section>
     </main>
   );

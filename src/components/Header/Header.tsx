@@ -9,20 +9,46 @@ import styles from "./header.module.scss";
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    async function checkUser() {
+    async function checkUserAndRole() {
       const { data } = await supabase.auth.getSession();
-      setIsLoggedIn(!!data.session);
+
+      if (!data.session?.user) {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+        return;
+      }
+
+      setIsLoggedIn(true);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.session.user.id)
+        .single();
+
+      setIsAdmin(profile?.role === "admin");
     }
 
-    checkUser();
+    checkUserAndRole();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setIsLoggedIn(!!session);
+
+        if (!session?.user) {
+          setIsAdmin(false);
+          return;
+        }
+
+        setTimeout(() => {
+          checkUserAndRole();
+        }, 0);
       },
     );
 
@@ -34,11 +60,16 @@ export default function Header() {
   async function handleLogout() {
     await supabase.auth.signOut();
     setIsLoggedIn(false);
+    setIsAdmin(false);
     router.push("/login");
   }
 
   function getLinkClass(href: string) {
     if (href === "/kop-bilar" && pathname.startsWith("/kop-bilar")) {
+      return styles.activeLink;
+    }
+
+    if (href === "/admin" && pathname.startsWith("/admin")) {
       return styles.activeLink;
     }
 
@@ -89,6 +120,12 @@ export default function Header() {
             </>
           ) : (
             <>
+              {isAdmin && (
+                <Link href="/admin" className={getLinkClass("/admin")}>
+                  Adminpanel
+                </Link>
+              )}
+
               <Link href="/min-sida" className={getLinkClass("/min-sida")}>
                 Min sida
               </Link>
@@ -103,3 +140,16 @@ export default function Header() {
     </header>
   );
 }
+
+/*
+  Header - short explanation
+
+  - This component shows the main navigation for the whole website.
+  - It checks if a visitor is logged in with Supabase.
+  - It also checks the user's role from the profiles table.
+  - If the user has role "admin", the Adminpanel link is shown.
+  - Normal users do not see the Adminpanel link.
+  - The role check is kept outside the auth listener with setTimeout.
+  - This prevents page navigation from hanging when switching between pages.
+  - The active menu link is highlighted based on the current page.
+*/
