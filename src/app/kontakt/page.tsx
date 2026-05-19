@@ -1,10 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.scss";
 
 export default function KontaktPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const carId = searchParams.get("carId");
@@ -12,6 +14,21 @@ export default function KontaktPage() {
   const price = searchParams.get("price");
 
   const hasCarInterest = Boolean(carId && car);
+
+  // Checks login before allowing a user to send interest for a specific car.
+  useEffect(() => {
+    async function checkUserForCarInterest() {
+      if (!hasCarInterest) return;
+
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        router.push("/login");
+      }
+    }
+
+    checkUserForCarInterest();
+  }, [hasCarInterest, router]);
 
   const prefilledMessage = hasCarInterest
     ? `Hej Bil4You,
