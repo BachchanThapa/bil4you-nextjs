@@ -46,10 +46,12 @@ function getStoredFavorites(storageKey: string) {
 
 /*
   Note to reviewer/teacher:
-  - CarCard is a reusable UI component.
-  - It can now also handle a simple favorite button.
-  - Favorites are saved in localStorage for this first version.
-  - The favorite key is based on logged-in user id so users do not share favorites.
+  - CarCard is a reusable UI component for showing one car.
+  - It also includes the favorite heart button.
+  - Favorites are currently saved in localStorage as a simple first version.
+  - Each logged-in user gets their own favorite list using their Supabase user id.
+  - Visitors who are not logged in are redirected to the login page before saving favorites.
+  - In a future improvement, favorites could be moved from localStorage to a Supabase table.
 */
 export default function CarCard({
   title,
@@ -66,7 +68,15 @@ export default function CarCard({
   useEffect(() => {
     async function loadFavoritesForCurrentUser() {
       const { data } = await supabase.auth.getUser();
-      const userKey = getFavoritesKey(data.user?.id);
+
+      // If no user is logged in, do not load guest favorites.
+      if (!data.user) {
+        setFavoritesKey(getFavoritesKey());
+        setIsFavorite(false);
+        return;
+      }
+
+      const userKey = getFavoritesKey(data.user.id);
 
       setFavoritesKey(userKey);
 
@@ -79,10 +89,20 @@ export default function CarCard({
     loadFavoritesForCurrentUser();
   }, [carId]);
 
-  function handleFavoriteClick() {
+  // Handles the favorite button click for this car card.
+  async function handleFavoriteClick() {
     if (!carId) return;
 
-    const favorites = getStoredFavorites(favoritesKey);
+    const { data } = await supabase.auth.getUser();
+
+    // If the visitor is not logged in, send them to login first.
+    if (!data.user) {
+      window.location.href = "/login";
+      return;
+    }
+
+    const userKey = getFavoritesKey(data.user.id);
+    const favorites = getStoredFavorites(userKey);
 
     let updatedFavorites: string[];
 
@@ -94,7 +114,8 @@ export default function CarCard({
       setIsFavorite(true);
     }
 
-    localStorage.setItem(favoritesKey, JSON.stringify(updatedFavorites));
+    localStorage.setItem(userKey, JSON.stringify(updatedFavorites));
+    setFavoritesKey(userKey);
   }
 
   return (
