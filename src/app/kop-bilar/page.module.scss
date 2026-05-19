@@ -31,7 +31,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--color-text);
-  margin: 0 0 14px;
+  margin: 0;
   text-transform: uppercase;
 }
 
@@ -43,13 +43,14 @@
   background: var(--color-surface);
 }
 
+.filter .panelTitle {
+  margin-bottom: 14px;
+}
+
 .field {
   display: grid;
-
-  /* label column + control column */
   grid-template-columns: 100px 1fr;
   gap: 10px;
-
   align-items: center;
   margin-bottom: 12px;
 }
@@ -59,10 +60,9 @@
   color: var(--color-text);
 }
 
-/* ✅ THIS is where you control input width */
 .control {
   height: 42px;
-  width: 180px; /* smaller, production-ish */
+  width: 180px;
   max-width: 100%;
 
   border-radius: 10px;
@@ -101,9 +101,9 @@
 
 .resultHeader {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
 
   margin-bottom: 14px;
   border-bottom: 1px solid var(--color-border);
@@ -111,14 +111,17 @@
 }
 
 .resultRight {
-  display: grid;
-  justify-items: end;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
 }
 
 .sortRow {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
 }
 
@@ -141,9 +144,16 @@
   margin: 0;
   font-size: 12px;
   color: var(--color-text-muted);
+  text-align: right;
 }
 
-/* ✅ FIXED: cards now fill the whole result box (no empty right space) */
+.searchText {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
 .resultsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(320px, 1fr));
@@ -155,7 +165,6 @@
   width: 100%;
 }
 
-/* keep your link area tight */
 .moreRow {
   display: flex;
   justify-content: center;
@@ -168,7 +177,7 @@
   font-size: 14px;
 }
 
-/* ✅ Empty state */
+/* Empty state */
 .emptyState {
   padding: 28px 10px;
   text-align: center;
@@ -224,7 +233,6 @@
     padding: 14px;
   }
 
-  /* stack label + control */
   .field {
     grid-template-columns: 1fr;
     gap: 6px;
@@ -238,7 +246,6 @@
     width: 100%;
   }
 
-  /* result header should wrap nicely */
   .resultHeader {
     flex-direction: column;
     align-items: flex-start;
@@ -247,7 +254,8 @@
 
   .resultRight {
     width: 100%;
-    justify-items: start;
+    margin-left: 0;
+    align-items: flex-start;
   }
 
   .sortRow {
@@ -260,24 +268,63 @@
     max-width: 100%;
   }
 
-  /* cards full width on mobile */
-  .cardsGrid {
-    grid-template-columns: 1fr;
-    justify-content: stretch;
+  .countText,
+  .searchText {
+    text-align: left;
   }
 }
 
+/*================= pushin the sortering btn back ===========*/
+/* Temporary class-name bridge for current JSX */
+.results {
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.resultsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 12px;
+}
+
+.sortArea {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.resultCount {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
 @media (max-width: 520px) {
-  /* Make the outer wrapper invisible on mobile */
   .panelInner {
     background: transparent;
     border: none;
     padding: 0;
     border-radius: 0;
-    gap: 12px; /* keep nice spacing between Filter and Result */
+    gap: 12px;
   }
 
-  /* Keep filter + result as the actual "cards" */
   .filter,
   .result {
     border-radius: 12px;
