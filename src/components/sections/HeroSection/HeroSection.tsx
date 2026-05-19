@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import styles from "./heroSection.module.scss";
 
 /*
-  Note to reviewer/teacher:
+  Note to remember here:
   - HeroSection is a "section component" for Hem.
   - Page.tsx stays small and only assembles sections (LEGO structure).
   - We reuse global UI classes (input/button) to keep design consistent.
@@ -61,6 +61,7 @@ export default function HeroSection({
   const [heroCars, setHeroCars] = useState<HeroCar[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // I fetch active cars from Supabase so the homepage hero can rotate real listings.
   useEffect(() => {
     async function fetchHeroCars() {
       const { data, error } = await supabase
@@ -78,8 +79,9 @@ export default function HeroSection({
           )
         `,
         )
+        .eq("is_sold", false)
         .order("created_at", { ascending: false })
-        .limit(6);
+        .limit(20);
 
       if (error) {
         console.error("Could not fetch hero cars:", error.message);
@@ -95,7 +97,7 @@ export default function HeroSection({
   useEffect(() => {
     if (heroCars.length <= 1) return;
 
-    // The hero car changes every 2 seconds while the homepage is open.
+    // The hero car changes every 5 seconds while the homepage is open.
     // clearInterval stops the loop when the user leaves this page.
     const intervalId = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % heroCars.length);
