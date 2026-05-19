@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.scss";
 import CarGallery from "@/components/CarGallery/CarGallery";
+import InterestButton from "@/components/InterestButton/InterestButton";
 
 type PageProps = {
   params: Promise<{
@@ -277,19 +278,14 @@ export default async function CarDetailByIdPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <Link
-                href={{
-                  pathname: "/kontakt",
-                  query: {
-                    carId: car.id,
-                    car: car.title,
-                    price: car.price,
-                  },
-                }}
-                className={styles.ctaBtn}
-              >
-                Jag är intresserad
-              </Link>
+              <InterestButton
+                carId={car.id}
+                carTitle={car.title}
+                carPrice={car.price}
+                sellerUserId={car.user_id}
+                ctaClassName={styles.ctaBtn}
+                ownCarClassName={styles.secondaryBtn}
+              />
 
               <Link href="/kop-bilar" className={styles.secondaryBtn}>
                 Tillbaka till alla bilar
