@@ -131,3 +131,25 @@ An improved hero section makes the homepage feel more finished, modern, and clea
 The admin panel shows that Bil4You is not only a customer-facing website, but also has internal functionality for managing and following up information.
 
 ---
+
+## Small Bug Fixes and UX Improvements
+
+### Favorites require login
+Previously, guests could save favorite cars in localStorage, which was not logical for a user-based system.  
+I updated the favorite logic so guests are redirected to login before saving favorites.
+
+### Car interest requires login
+A guest could open a car and send an interest message without being authenticated.  
+I changed the flow so car interest is connected to logged-in users, while the normal contact form stays open for general questions.
+
+### Hide interest button on own listing
+A seller could see the “Jag är intresserad” button on their own car listing.  
+I added an owner check using `cars.user_id` and Supabase Auth, so sellers now see “Detta är din annons” instead.
+
+### Homepage search connects to car results
+The homepage search previously only redirected to the car page in a simple way.  
+I connected the search query to `/kop-bilar`, so users can search by brand, model, title or year.
+
+### Dynamic hero cars
+The homepage hero was limited to a small number of cars.  
+I updated it to use more active car listings from Supabase, making the homepage feel more dynamic.

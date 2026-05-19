@@ -131,3 +131,25 @@ En förbättrad hero-sektion gör att startsidan känns mer färdig, modern och 
 Adminpanelen visar att Bil4You inte bara är en kundsida, utan också har interna funktioner för att hantera och följa upp information.
 
 ---
+
+## Mindre buggfixar och UX-förbättringar
+
+### Favoriter kräver inloggning
+Tidigare kunde gäster spara favoritbilar i localStorage, vilket inte passade ett användarbaserat system.  
+Jag uppdaterade logiken så att gäster skickas till inloggning innan de kan spara favoriter.
+
+### Bilintresse kräver inloggning
+En gäst kunde öppna en bil och skicka en intresseanmälan utan att vara autentiserad.  
+Jag ändrade flödet så att bilintresse kopplas till inloggade användare, medan vanliga frågor via kontaktsidan fortfarande är öppna.
+
+### Dölj intresseknapp på egen annons
+En säljare kunde se knappen “Jag är intresserad” på sin egen bilannons.  
+Jag lade till en ägarkontroll med `cars.user_id` och Supabase Auth, så säljaren nu ser “Detta är din annons” istället.
+
+### Startsidesökning kopplas till bilresultat
+Sökningen på startsidan skickade tidigare bara användaren vidare på ett enklare sätt.  
+Jag kopplade sökningen till `/kop-bilar`, så användaren kan söka på märke, modell, titel eller årsmodell.
+
+### Dynamiska bilar i hero-sektionen
+Hero-sektionen på startsidan var begränsad till ett mindre antal bilar.  
+Jag uppdaterade den så att fler aktiva bilannonser från Supabase kan visas, vilket gör startsidan mer dynamisk.
