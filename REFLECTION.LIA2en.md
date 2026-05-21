@@ -1,4 +1,4 @@
-🇸🇪 Svensk version finns här: [REFLECTION på svenska](REFLECTION.md)
+🇸🇪 Svensk version finns här: [REFLECTION på svenska](REFLECTION.LIA2.md)
 
 # Bil4You LIA 2 Reflections
 
