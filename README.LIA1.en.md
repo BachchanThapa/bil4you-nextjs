@@ -1,4 +1,4 @@
-🇸🇪 Svensk version finns här: [README på svenska](README.md)
+🇸🇪 Svensk version finns här: [README på svenska](README.LIA1.md)
 
 # Bil4You – Internship Project
 
