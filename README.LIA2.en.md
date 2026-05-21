@@ -1,9 +1,3 @@
-
----
-
-# File 2: `README.LIA2.en.md`
-
-```md
 🇸🇪 Swedish version available here: [README in Swedish](README.LIA2.md)
 
 # Bil4You – LIA 2 Internship Project
