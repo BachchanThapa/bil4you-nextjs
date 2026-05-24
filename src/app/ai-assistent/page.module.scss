@@ -1,0 +1,201 @@
+/* Main page layout */
+.page {
+  min-height: calc(100vh - 80px);
+  padding: 4rem 1.5rem;
+  background: #f5f8fb;
+}
+
+/* Top intro section */
+.hero {
+  max-width: 820px;
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+/* Small blue label above the title */
+.label {
+  margin-bottom: 0.5rem;
+  color: #2563eb;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Main page title */
+.hero h1 {
+  margin-bottom: 1rem;
+  color: #111827;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+/* Text below the title */
+.description {
+  color: #4b5563;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* Chat card container */
+.chatPreview {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border: 1px solid #dbeafe;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+/* Chat card header */
+.chatHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Chat title */
+.chatHeader h2 {
+  margin-bottom: 0.25rem;
+  color: #111827;
+  font-size: 1.3rem;
+}
+
+/* Chat subtitle */
+.chatHeader p {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Demo status badge */
+.status {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Area where chat messages are shown */
+.messageArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 260px;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #f9fafb;
+}
+
+/* AI assistant message bubble */
+.botMessage {
+  width: fit-content;
+  max-width: 80%;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem 1rem 1rem 0.25rem;
+  background: #e0f2fe;
+  color: #0f172a;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* User question message bubble */
+.userMessage {
+  width: fit-content;
+  max-width: 80%;
+  margin-left: auto;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem 1rem 0.25rem 1rem;
+  background: #2563eb;
+  color: #ffffff;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+/* Input and button row */
+.chatForm {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Chat input field */
+.chatForm input {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+/* Input focus style */
+.chatForm input:focus {
+  outline: 3px solid rgba(37, 99, 235, 0.18);
+  border-color: #2563eb;
+}
+
+/* Send button */
+.chatForm button {
+  padding: 0.85rem 1.25rem;
+  border: none;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Send button hover */
+.chatForm button:hover {
+  background: #1d4ed8;
+}
+
+/* Disabled button style when the assistant is loading */
+.chatForm button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+
+
+/* Link style for car detail links inside assistant messages */
+.chatLink {
+  color: #1d4ed8;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.chatLink:hover {
+  color: #1e40af;
+}
+
+
+/* Mobile layout adjustments */
+@media (max-width: 640px) {
+  .page {
+    padding: 2.5rem 1rem;
+  }
+
+  .chatHeader {
+    flex-direction: column;
+  }
+
+  .botMessage,
+  .userMessage {
+    max-width: 100%;
+  }
+
+  .chatForm {
+    flex-direction: column;
+  }
+
+  .chatForm button {
+    width: 100%;
+  }
+}
