@@ -153,3 +153,19 @@ I connected the search query to `/kop-bilar`, so users can search by brand, mode
 ### Dynamic hero cars
 The homepage hero was limited to a small number of cars.  
 I updated it to use more active car listings from Supabase, making the homepage feel more dynamic.
+
+---
+
+## Ticket #33 – AI Chat Assistant Integration
+
+### What I Learned
+1. How to build a simple AI chat feature in Next.js using custom API routes.
+2. How frontend and backend can communicate using `fetch()` and JSON data.
+3. How Ollama can run AI models locally without external API costs.
+4. How Supabase data can be combined with AI responses to display real car listings directly inside the chat.
+5. How the AI assistant can answer in both Swedish and English depending on the user’s language.
+6. How dynamic links to car listings can be generated directly from the database.
+7. How small UI improvements such as a floating AI button and homepage integration improve the user experience.
+
+### Why This Is Important
+The AI assistant makes Bil4You feel more modern and interactive by helping users find cars and receive information directly through a chat experience.
