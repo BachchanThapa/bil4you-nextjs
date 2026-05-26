@@ -254,6 +254,30 @@ Beslut kring struktur, funktioner och implementation har gjorts utifrån projekt
 
 ---
 
+## 🤖 Lokal AI med Ollama
+
+Bil4You innehåller även en AI-assistent byggd med lokal AI via **Ollama**.
+
+AI-assistenten kan:
+
+- Svara på svenska och engelska
+- Hjälpa användaren att hitta bilar
+- Visa riktiga bilannonser från databasen
+- Generera dynamiska länkar till bilannonser
+
+Frontend och övriga funktioner fungerar online via Next.js, Supabase och Vercel.
+
+Själva AI-funktionen kräver däremot att **Ollama körs lokalt** på datorn, eftersom modellen inte är hostad online.
+
+Detta val gjordes för att:
+- Lära mig hur lokal AI fungerar
+- Undvika externa API-kostnader
+- Experimentera med AI-integration i en riktig webbapplikation
+
+Om Ollama inte är startad visas ett tydligt meddelande i chatten istället för att applikationen kraschar.
+
+---
+
 ## 🚀 Kom igång
 
 Installera beroenden:
