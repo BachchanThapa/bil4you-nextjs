@@ -52,35 +52,40 @@ export async function POST(request: Request) {
 // This function makes a simple guess if the question is in English.
 function checkIfEnglishQuestion(question: string) {
   const englishWords = [
-    "do",
-    "you",
-    "have",
-    "any",
-    "car",
-    "cars",
-    "can",
-    "english",
-    "buy",
-    "sell",
-    "contact",
-    "available",
-  ];
-
+  "do",
+  "you",
+  "have",
+  "any",
+  "what",
+  "about",
+  "show",
+  "me",
+  "car",
+  "cars",
+  "can",
+  "english",
+  "buy",
+  "sell",
+  "contact",
+  "available",
+  "please",
+];
   return englishWords.some((word) => question.includes(word));
 }
 
 // This function checks if the question contains a supported car brand.
 function findCarBrand(question: string) {
   const brands = [
-    "volvo",
-    "toyota",
-    "tesla",
-    "audi",
-    "kia",
-    "mercedes",
-    "volkswagen",
-  ];
-
+  "volvo",
+  "toyota",
+  "tesla",
+  "audi",
+  "kia",
+  "mercedes",
+  "volkswagen",
+  "bmw",
+  "Rolls-Royce",
+];
   return brands.find((brand) => question.includes(brand));
 }
 
