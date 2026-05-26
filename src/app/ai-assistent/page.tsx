@@ -126,7 +126,14 @@ export default function AiAssistentPage() {
           ))}
 
           {isLoading && (
-            <div className={styles.botMessage}>AI-assistenten skriver...</div>
+            <div className={styles.botMessage}>
+              <span className={styles.loadingDots}>
+                AI-assistenten skriver
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+              </span>
+            </div>
           )}
         </div>
 

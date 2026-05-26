@@ -4,6 +4,7 @@ import "./globals.scss";
 
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import FloatingAiButton from "@/components/FloatingAiButton";
 
 /*
   Metadata is defined at layout level so all pages inherit
@@ -14,9 +15,11 @@ export const metadata: Metadata = {
   title: {
     default: "Bil4You",
     template: "%s | Bil4You",
+
     // Allows individual pages to set their own title later
     // Example: "Köp bilar | Bil4You"
   },
+
   description: "Bil4You – modern bilförsäljning online",
 };
 
@@ -25,10 +28,14 @@ export const viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="sv" suppressHydrationWarning>
-      {/* lang="sv" because the site content is in Swedish. */}
+      {/* lang="sv" because the site content is mainly in Swedish. */}
       <body>
         {/* This wrapper makes footer stay at bottom on short pages */}
         <div className="site">
@@ -41,7 +48,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Global footer visible on all pages */}
           <Footer />
         </div>
+
+        {/* Floating AI button visible on all pages */}
+        <FloatingAiButton />
       </body>
     </html>
   );
 }
+
+/*
+  This layout file:
+  1. Wraps all pages with the global Header and Footer.
+  2. Applies shared metadata and SEO settings.
+  3. Loads global SCSS styles for the whole application.
+  4. Keeps the footer at the bottom on shorter pages.
+  5. Displays the floating AI assistant button globally.
+*/
