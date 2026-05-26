@@ -254,6 +254,30 @@ Decisions regarding structure, features, and implementation were made based on t
 
 ---
 
+## 🤖 Local AI with Ollama
+
+Bil4You also includes an AI assistant powered by **Ollama** running locally.
+
+The AI assistant can:
+
+- Answer in both Swedish and English
+- Help users find cars
+- Display real car listings from the database
+- Generate dynamic links to car listings
+
+The frontend and all other core functionality work online through Next.js, Supabase, and Vercel.
+
+However, the AI functionality itself requires **Ollama to run locally** on the computer, since the model is not hosted online.
+
+This decision was made to:
+- Learn how local AI systems work
+- Avoid external API costs
+- Experiment with AI integration in a real web application
+
+If Ollama is not running, the application displays a clear fallback message instead of crashing.
+
+---
+
 ## 🚀 Getting Started
 
 Install dependencies:
