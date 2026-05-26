@@ -153,3 +153,19 @@ Jag kopplade sökningen till `/kop-bilar`, så användaren kan söka på märke,
 ### Dynamiska bilar i hero-sektionen
 Hero-sektionen på startsidan var begränsad till ett mindre antal bilar.  
 Jag uppdaterade den så att fler aktiva bilannonser från Supabase kan visas, vilket gör startsidan mer dynamisk.
+
+---
+
+## Ticket #33 – AI Chat Assistant Integration
+
+### Vad jag lärde mig
+1. Hur man bygger en enkel AI-chattfunktion i Next.js med egna API-routes.
+2. Hur frontend och backend kan kommunicera med `fetch()` och JSON-data.
+3. Hur Ollama kan användas lokalt för att köra AI-modeller utan externa API-kostnader.
+4. Hur Supabase-data kan kombineras med AI-svar för att visa riktiga bilannonser direkt i chatten.
+5. Hur AI-assistenten kan svara på både svenska och engelska beroende på användarens språk.
+6. Hur dynamiska länkar till bilannonser kan genereras direkt från databasen.
+7. Hur små UI-förbättringar som flytande AI-knapp och startsidesintegration förbättrar användarupplevelsen.
+
+### Varför detta är viktigt
+AI-assistenten gör Bil4You mer modern och interaktiv genom att hjälpa användare hitta bilar och få information direkt via en chattfunktion.
