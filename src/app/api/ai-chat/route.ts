@@ -52,51 +52,52 @@ export async function POST(request: Request) {
 // This function makes a simple guess if the question is in English.
 function checkIfEnglishQuestion(question: string) {
   const englishWords = [
-  "do",
-  "you",
-  "have",
-  "any",
-  "what",
-  "about",
-  "show",
-  "me",
-  "car",
-  "cars",
-  "can",
-  "english",
-  "buy",
-  "sell",
-  "contact",
-  "available",
-  "please",
-];
+    "Hello",
+    "hello",
+    "do",
+    "you",
+    "have",
+    "any",
+    "what",
+    "about",
+    "show",
+    "me",
+    "car",
+    "cars",
+    "can",
+    "english",
+    "buy",
+    "sell",
+    "contact",
+    "available",
+    "please",
+  ];
   return englishWords.some((word) => question.includes(word));
 }
 
 // This function checks if the question contains a supported car brand.
 function findCarBrand(question: string) {
   const brands = [
-  "volvo",
-  "toyota",
-  "tesla",
-  "audi",
-  "kia",
-  "mercedes",
-  "volkswagen",
-  "bmw",
-  "Rolls-Royce",
-];
+    "volvo",
+    "toyota",
+    "tesla",
+    "audi",
+    "kia",
+    "mercedes",
+    "volkswagen",
+    "bmw",
+    "rolls-royce",
+    "rolls royce",
+  ];
   return brands.find((brand) => question.includes(brand));
 }
 
 // This function searches Supabase and returns matching cars.
-async function getCarsByBrand(
-  brand: string,
-  isEnglishQuestion: boolean,
-) {
+async function getCarsByBrand(brand: string, isEnglishQuestion: boolean) {
   const { data: cars, error } = await supabase
     .from("cars")
-    .select("id, title, brand, model, year, price, is_sold")
+    .select("id, title, brand, model, year, price, is_sold, is_approved")
+    .eq("is_approved", true)
     .eq("is_sold", false)
     .order("created_at", { ascending: false })
     .limit(20);

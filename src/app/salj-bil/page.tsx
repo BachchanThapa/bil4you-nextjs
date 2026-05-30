@@ -145,6 +145,8 @@ export default function SaljBilPage() {
 
           description: sellerDescription,
           location: sellerAddress,
+          // New ads wait for admin approval before public display.
+          is_approved: false,
         })
         .select("id")
         .single();
@@ -154,6 +156,21 @@ export default function SaljBilPage() {
         alert("Något gick fel när bilen skulle sparas.");
         return;
       }
+
+      // Creates an admin message when a new ad is waiting for approval.
+      await supabase.from("messages").insert({
+        name: sellerName || "Ny säljare",
+        phone: sellerPhone,
+        email: user.email || "",
+        subject: "Ny bilannons väntar på godkännande",
+        message: `En ny bilannons har skickats in och väntar på granskning.
+
+Bil: ${title}
+Pris: ${price.toLocaleString("sv-SE")} kr
+Annons-ID: ${carData.id}
+
+Kontrollera bilder och information innan annonsen publiceras.`,
+      });
 
       if (images.length > 0) {
         const imageRows = [];
@@ -195,8 +212,10 @@ export default function SaljBilPage() {
         }
       }
 
-      alert("Annons skickad och sparad i Supabase!");
-      router.push("/kop-bilar");
+      alert(
+        "Din annons har skickats in och väntar på granskning. Vi kontrollerar annonsen och publicerar den inom 24 timmar om allt ser bra ut.",
+      );
+      router.push("/mina-annonser");
     } finally {
       setIsSubmitting(false);
     }

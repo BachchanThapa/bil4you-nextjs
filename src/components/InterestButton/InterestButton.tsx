@@ -22,19 +22,50 @@ export default function InterestButton({
   ownCarClassName,
 }: InterestButtonProps) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [hasSentInterest, setHasSentInterest] = useState(false);
+  const [isCheckingInterest, setIsCheckingInterest] = useState(true);
 
-  // I check the logged-in user so sellers do not send interest on their own car.
+  // I check the logged-in user and if this user already sent interest for this car.
   useEffect(() => {
-    async function checkCurrentUser() {
+    async function checkCurrentUserAndInterest() {
       const { data } = await supabase.auth.getUser();
-      setCurrentUserId(data.user?.id || null);
+      const user = data.user;
+
+      setCurrentUserId(user?.id || null);
+
+      if (!user?.email) {
+        setIsCheckingInterest(false);
+        return;
+      }
+
+      const { data: existingMessages } = await supabase
+        .from("messages")
+        .select("id")
+        .eq("email", user.email)
+        .eq("subject", `Bilförfrågan: ${carTitle}`)
+        .ilike("message", `%Annons-ID: ${carId}%`)
+        .limit(1);
+
+      if (existingMessages && existingMessages.length > 0) {
+        setHasSentInterest(true);
+      }
+
+      setIsCheckingInterest(false);
     }
 
-    checkCurrentUser();
-  }, []);
+    checkCurrentUserAndInterest();
+  }, [carId, carTitle]);
 
   if (currentUserId && currentUserId === sellerUserId) {
     return <div className={ownCarClassName}>Detta är din annons</div>;
+  }
+
+  if (isCheckingInterest) {
+    return <div className={ownCarClassName}>Kontrollerar intresse...</div>;
+  }
+
+  if (hasSentInterest) {
+    return <div className={ownCarClassName}>Intresse redan skickat</div>;
   }
 
   return (
@@ -53,9 +84,12 @@ export default function InterestButton({
     </Link>
   );
 }
+
 /*
   - This component controls the interest button on the car detail page.
   - It checks the logged-in user with Supabase Auth.
   - If the logged-in user owns the car, the interest button is hidden.
-  - This prevents sellers from sending interest messages on their own ads.
+  - It checks if the user already sent interest for this specific car.
+  - If interest already exists, the button becomes inactive.
+  - This prevents duplicate interest messages for the same car.
 */

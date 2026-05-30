@@ -25,6 +25,7 @@ type SupabaseCar = {
   mileage: number;
   created_at: string;
   is_sold: boolean;
+  is_approved: boolean;
   car_images: CarImage[];
 };
 
@@ -47,6 +48,16 @@ function formatPriceSEK(n: number) {
 
 function formatDate(dateString: string) {
   return dateString.split("T")[0];
+}
+
+// Checks if a car ad has expired after 45 days.
+function isAdExpired(createdAt: string) {
+  const createdDate = new Date(createdAt);
+  const expiryDate = new Date(createdDate);
+
+  expiryDate.setDate(createdDate.getDate() + 45);
+
+  return new Date() > expiryDate;
 }
 
 type SortValue = "newest" | "priceAsc" | "priceDesc";
@@ -86,12 +97,15 @@ export default function KopBilarPage() {
           mileage,
           created_at,
           is_sold,
+          is_approved,          
           car_images (
             image_url,
             sort_order
           )
         `,
         )
+        // Public car list only shows approved and unsold cars.
+        .eq("is_approved", true)
         .eq("is_sold", false)
         .order("created_at", { ascending: false });
 
@@ -102,25 +116,28 @@ export default function KopBilarPage() {
         return;
       }
 
-      const mappedCars: Car[] = ((data as SupabaseCar[]) || []).map((car) => {
-        const sortedImages = [...(car.car_images || [])].sort(
-          (a, b) => a.sort_order - b.sort_order,
-        );
+      const mappedCars: Car[] = ((data as SupabaseCar[]) || [])
+        // Public list should not show expired ads.
+        .filter((car) => !isAdExpired(car.created_at))
+        .map((car) => {
+          const sortedImages = [...(car.car_images || [])].sort(
+            (a, b) => a.sort_order - b.sort_order,
+          );
 
-        return {
-          id: car.id,
-          title: car.title,
-          make: car.brand,
-          model: car.model,
-          year: car.year,
-          fuel: car.fuel_type,
-          price: car.price,
-          mileage: car.mileage,
-          publishedAt: formatDate(car.created_at),
-          image:
-            sortedImages[0]?.image_url || "/images/cars/car-placeholder.jpg",
-        };
-      });
+          return {
+            id: car.id,
+            title: car.title,
+            make: car.brand,
+            model: car.model,
+            year: car.year,
+            fuel: car.fuel_type,
+            price: car.price,
+            mileage: car.mileage,
+            publishedAt: formatDate(car.created_at),
+            image:
+              sortedImages[0]?.image_url || "/images/cars/car-placeholder.jpg",
+          };
+        });
 
       setCars(mappedCars);
       setIsLoading(false);
@@ -322,9 +339,11 @@ export default function KopBilarPage() {
 
               {errorMessage && <p>{errorMessage}</p>}
 
-              {!isLoading && !errorMessage && filteredAndSorted.length === 0 && (
-                <p>Inga bilar matchade din sökning.</p>
-              )}
+              {!isLoading &&
+                !errorMessage &&
+                filteredAndSorted.length === 0 && (
+                  <p>Inga bilar matchade din sökning.</p>
+                )}
 
               <div className={styles.grid}>
                 {filteredAndSorted.map((car) => (
@@ -357,7 +376,7 @@ export default function KopBilarPage() {
   Note to reviewer/teacher:
   - This page shows all available cars from Supabase.
   - It reads real data from the cars table and connected car_images table.
-  - It only shows cars where is_sold is false.
+  - It only shows cars where is_approved is true, is_sold is false and the ad is not expired.
   - It receives homepage search from the URL, for example /kop-bilar?search=BMW.
   - The search can match brand, model, title or year.
   - The sidebar filters can filter by brand, price, year and fuel.
