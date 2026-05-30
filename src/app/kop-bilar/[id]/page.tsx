@@ -43,7 +43,10 @@ export default async function CarDetailByIdPage({ params }: PageProps) {
       )
     `,
     )
+    // Public detail page only opens approved and unsold cars.
     .eq("id", id)
+    .eq("is_approved", true)
+    .eq("is_sold", false)
     .single();
 
   const { data: similarCars } = await supabase
@@ -61,7 +64,9 @@ export default async function CarDetailByIdPage({ params }: PageProps) {
       )
     `,
     )
-    .neq("id", id)
+    // Similar cars at the bottom as liknande bilar should also be public approved cars only.
+    .neq("id", id) //Do not include the current car itself.
+    .eq("is_approved", true)
     .eq("is_sold", false)
     .limit(3);
 
@@ -297,3 +302,16 @@ export default async function CarDetailByIdPage({ params }: PageProps) {
     </main>
   );
 }
+/*
+========================================
+CAR DETAIL PAGE OVERVIEW
+========================================
+
+- Shows one selected car from Supabase by its id.
+- Only approved and unsold cars can open on the public detail page.
+- Loads all connected car images from the car_images table.
+- Builds a gallery, key chips, specs table and seller contact card.
+- Shows similar approved cars from the same public marketplace.
+- Uses InterestButton so logged-in users can contact the seller safely.
+
+*/

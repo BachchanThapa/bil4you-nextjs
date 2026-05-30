@@ -37,12 +37,32 @@ export default function RegisterPage() {
       return;
     }
 
+    // DUPLICATE CONTROL: checks if this e-mail already exists before creating an account.
+    const { data: emailAlreadyExists, error: emailCheckError } =
+      await supabase.rpc("email_exists", {
+        check_email: email,
+      });
+
+    if (emailCheckError) {
+      console.error(emailCheckError);
+      setMessage("Kunde inte kontrollera e-posten. Försök igen.");
+      setMessageType("error");
+      return;
+    }
+
+    if (emailAlreadyExists) {
+      setMessage("Den här e-posten är redan registrerad. Logga in istället.");
+      setMessageType("error");
+      return;
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    if (error || !data.user) {
+    if (error) {
+      console.error(error);
       setMessage(
         "Kontot kunde inte skapas. E-posten kan redan vara registrerad.",
       );
@@ -51,9 +71,9 @@ export default function RegisterPage() {
     }
 
     /*
-  The profiles row is created automatically by a Supabase database trigger.
-  That keeps registration cleaner and makes every new user visible in admin stats.
-*/
+      The profiles row is created automatically by a Supabase database trigger.
+      That keeps registration cleaner and makes every new user visible in admin stats.
+    */
 
     setMessage("Kontot har skapats. Du kan nu logga in och använda Min sida.");
     setMessageType("success");
@@ -127,3 +147,20 @@ export default function RegisterPage() {
     </main>
   );
 }
+
+/*
+========================================
+REGISTER PAGE OVERVIEW
+========================================
+
+- Creates new user accounts with Supabase Auth.
+- Checks password strength before registration.
+- DUPLICATE CONTROL:
+  Checks the database before registration to stop duplicate e-mail accounts.
+- Uses a Supabase RPC function because RLS can hide profile rows from the client.
+- Shows friendly feedback messages instead of system errors.
+- Profiles are automatically added to the profiles table by a database trigger.
+- New users become visible in the admin panel statistics.
+- Keeps the database cleaner and easier to manage.
+
+*/

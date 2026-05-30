@@ -23,6 +23,7 @@ type SupabaseCar = {
   price: number;
   created_at: string;
   is_sold: boolean;
+  is_approved: boolean;
   car_images: CarImage[];
 };
 
@@ -38,6 +39,7 @@ type Car = {
   daysLeft: number;
   isExpired: boolean;
   isSold: boolean;
+  isApproved: boolean;
 };
 
 type SortValue = "newest" | "priceAsc" | "priceDesc";
@@ -50,6 +52,7 @@ function formatDate(dateString: string) {
   return dateString.split("T")[0];
 }
 
+// Calculates how many days are left before an ad expires.
 function getAdExpiryInfo(createdAt: string) {
   const createdDate = new Date(createdAt);
   const expiryDate = new Date(createdDate);
@@ -77,6 +80,7 @@ export default function MinaAnnonserPage() {
   const [fuel, setFuel] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortValue>("newest");
 
+// Fetches only the logged-in user's own car ads.
   useEffect(() => {
     async function fetchMyCars() {
       setIsLoading(true);
@@ -105,6 +109,7 @@ export default function MinaAnnonserPage() {
           price,
           created_at,
           is_sold,
+          is_approved,
           car_images (
             image_url,
             sort_order
@@ -139,6 +144,7 @@ export default function MinaAnnonserPage() {
           daysLeft: expiryInfo.daysLeft,
           isExpired: expiryInfo.isExpired,
           isSold: car.is_sold,
+          isApproved: car.is_approved,
           image:
             sortedImages[0]?.image_url ||
             "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
@@ -162,6 +168,7 @@ export default function MinaAnnonserPage() {
     [cars],
   );
 
+// Filters and sorts the user's own ads in one place.
   const filteredAndSorted = useMemo(() => {
     const max = maxPrice.trim() === "" ? null : Number(maxPrice);
     const min = minPrice.trim() === "" ? null : Number(minPrice);
@@ -362,11 +369,13 @@ export default function MinaAnnonserPage() {
                           `Årsmodell: ${car.year}`,
                           `Bränsle: ${car.fuel}`,
                           `Publicerad: ${car.publishedAt}`,
-                          car.isSold
-                            ? "Status: Såld"
-                            : car.isExpired
-                              ? "Status: Annonsen har gått ut"
-                              : `Status: Aktiv annons · ${car.daysLeft} dagar kvar`,
+                          !car.isApproved
+                            ? "Status: Väntar på godkännande"
+                            : car.isSold
+                              ? "Status: Såld"
+                              : car.isExpired
+                                ? "Status: Annonsen har gått ut"
+                                : `Status: Aktiv annons · ${car.daysLeft} dagar kvar`,
                         ]}
                         fluid
                       />
@@ -387,3 +396,16 @@ export default function MinaAnnonserPage() {
     </div>
   );
 }
+/*
+========================================
+MY ADS PAGE OVERVIEW
+========================================
+
+- Shows car ads created by the logged-in user.
+- Fetches only cars where user_id matches the current user.
+- Shows pending ads even before admin approval.
+- Displays status text for pending, sold, expired and active ads.
+- Allows the user to filter and sort their own ads.
+- Links each ad to the public car detail page when it is approved.
+
+*/

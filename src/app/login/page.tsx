@@ -23,8 +23,26 @@ export default function LoginPage() {
 
     setMessage("");
 
-    // Step 1:
-    // Supabase checks if email and password are correct.
+    // EMAIL CHECK: checks if this e-mail exists before trying to log in.
+    const { data: emailExists, error: emailCheckError } = await supabase.rpc(
+      "email_exists",
+      {
+        check_email: email,
+      },
+    );
+
+    if (emailCheckError) {
+      console.error(emailCheckError);
+      setMessage("Kunde inte kontrollera e-posten. Försök igen.");
+      return;
+    }
+
+    if (!emailExists) {
+      setMessage("E-posten är inte registrerad ännu. Skapa konto först.");
+      return;
+    }
+
+    // Supabase Auth checks if email and password are correct.
     const { data: loginData, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -35,9 +53,7 @@ export default function LoginPage() {
       return;
     }
 
-    // Step 2:
-    // After login, we check the profiles table.
-    // The profiles table tells us if this logged-in user is "admin" or "user".
+    // After login, we check the profiles table to know if the user is admin or normal user.
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
@@ -50,16 +66,7 @@ export default function LoginPage() {
       return;
     }
 
-    /*
-      Note to reviewer/teacher:
-      - Supabase Auth checks email and password.
-      - The profiles table checks if the logged-in user is admin or normal user.
-      - This prevents a normal user from getting admin access by clicking admin login.
-    */
-
-    // Step 3:
-    // If the person clicked "admin login",
-    // we must make sure the role is really admin.
+    // ADMIN CONTROL: only users with admin role can enter Adminpanel.
     if (mode === "admin") {
       if (profile.role !== "admin") {
         await supabase.auth.signOut();
@@ -71,8 +78,7 @@ export default function LoginPage() {
       return;
     }
 
-    // Step 4:
-    // Normal users go to Min sida.
+    // Normal users go to Min sida after login.
     router.push("/min-sida");
   }
 
@@ -221,3 +227,21 @@ export default function LoginPage() {
     </main>
   );
 }
+
+/*
+========================================
+LOGIN PAGE OVERVIEW
+========================================
+
+- Lets visitors choose between user login and admin login.
+- EMAIL CHECK:
+  Checks if the e-mail exists before trying to log in.
+- Shows a friendly message if the e-mail is not registered yet.
+- Supabase Auth checks the password for registered users.
+- ADMIN CONTROL:
+  Checks the user's role from the profiles table after login.
+- Normal users are sent to Min sida.
+- Admin users are sent to Adminpanel.
+- Normal users cannot enter Adminpanel by clicking admin login.
+
+*/
