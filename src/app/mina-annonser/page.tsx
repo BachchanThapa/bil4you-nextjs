@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Container from "@/components/Container";
 import CarCard from "@/components/CarCard/CarCard";
@@ -22,7 +21,6 @@ type SupabaseCar = {
   year: number;
   fuel_type: string;
   price: number;
-  mileage: number;
   created_at: string;
   is_sold: boolean;
   is_approved: boolean;
@@ -31,16 +29,20 @@ type SupabaseCar = {
 
 type Car = {
   id: string;
-  title: string;
   make: string;
   model: string;
   year: number;
   fuel: Fuel;
   price: number;
-  mileage: number;
   publishedAt: string;
   image: string;
+  daysLeft: number;
+  isExpired: boolean;
+  isSold: boolean;
+  isApproved: boolean;
 };
+
+type SortValue = "newest" | "priceAsc" | "priceDesc";
 
 function formatPriceSEK(n: number) {
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} kr`;
@@ -50,22 +52,23 @@ function formatDate(dateString: string) {
   return dateString.split("T")[0];
 }
 
-// Checks if a car ad has expired after 45 days.
-function isAdExpired(createdAt: string) {
+// Calculates how many days are left before an ad expires.
+function getAdExpiryInfo(createdAt: string) {
   const createdDate = new Date(createdAt);
   const expiryDate = new Date(createdDate);
-
   expiryDate.setDate(createdDate.getDate() + 45);
 
-  return new Date() > expiryDate;
+  const today = new Date();
+  const difference = expiryDate.getTime() - today.getTime();
+  const daysLeft = Math.ceil(difference / (1000 * 60 * 60 * 24));
+
+  return {
+    daysLeft,
+    isExpired: daysLeft <= 0,
+  };
 }
 
-type SortValue = "newest" | "priceAsc" | "priceDesc";
-
-export default function KopBilarPage() {
-  const searchParams = useSearchParams();
-  const searchText = searchParams.get("search") || "";
-
+export default function MinaAnnonserPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -77,11 +80,21 @@ export default function KopBilarPage() {
   const [fuel, setFuel] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortValue>("newest");
 
-  // I fetch the real car data from Supabase and prepare it for the car cards.
+// Fetches only the logged-in user's own car ads.
   useEffect(() => {
-    async function fetchCars() {
+    async function fetchMyCars() {
       setIsLoading(true);
       setErrorMessage("");
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setErrorMessage("Du måste logga in för att se dina annonser.");
+        setIsLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("cars")
@@ -94,56 +107,55 @@ export default function KopBilarPage() {
           year,
           fuel_type,
           price,
-          mileage,
           created_at,
           is_sold,
-          is_approved,          
+          is_approved,
           car_images (
             image_url,
             sort_order
           )
         `,
         )
-        // Public car list only shows approved and unsold cars.
-        .eq("is_approved", true)
-        .eq("is_sold", false)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) {
         console.error(error);
-        setErrorMessage("Kunde inte hämta bilar just nu.");
+        setErrorMessage("Kunde inte hämta dina annonser just nu.");
         setIsLoading(false);
         return;
       }
 
-      const mappedCars: Car[] = ((data as SupabaseCar[]) || [])
-        // Public list should not show expired ads.
-        .filter((car) => !isAdExpired(car.created_at))
-        .map((car) => {
-          const sortedImages = [...(car.car_images || [])].sort(
-            (a, b) => a.sort_order - b.sort_order,
-          );
+      const mappedCars: Car[] = ((data as SupabaseCar[]) || []).map((car) => {
+        const sortedImages = [...(car.car_images || [])].sort(
+          (a, b) => a.sort_order - b.sort_order,
+        );
 
-          return {
-            id: car.id,
-            title: car.title,
-            make: car.brand,
-            model: car.model,
-            year: car.year,
-            fuel: car.fuel_type,
-            price: car.price,
-            mileage: car.mileage,
-            publishedAt: formatDate(car.created_at),
-            image:
-              sortedImages[0]?.image_url || "/images/cars/car-placeholder.jpg",
-          };
-        });
+        const expiryInfo = getAdExpiryInfo(car.created_at);
+
+        return {
+          id: car.id,
+          make: car.brand,
+          model: car.model,
+          year: car.year,
+          fuel: car.fuel_type,
+          price: car.price,
+          publishedAt: formatDate(car.created_at),
+          daysLeft: expiryInfo.daysLeft,
+          isExpired: expiryInfo.isExpired,
+          isSold: car.is_sold,
+          isApproved: car.is_approved,
+          image:
+            sortedImages[0]?.image_url ||
+            "/images/cars/thumbs/volvo-v60-polestar-thumb.jpg",
+        };
+      });
 
       setCars(mappedCars);
       setIsLoading(false);
     }
 
-    fetchCars();
+    fetchMyCars();
   }, []);
 
   const makes = useMemo(
@@ -156,26 +168,13 @@ export default function KopBilarPage() {
     [cars],
   );
 
-  // I filter homepage search, sidebar filters and sorting in one place.
+// Filters and sorts the user's own ads in one place.
   const filteredAndSorted = useMemo(() => {
     const max = maxPrice.trim() === "" ? null : Number(maxPrice);
     const min = minPrice.trim() === "" ? null : Number(minPrice);
     const yearNum = year.trim() === "" ? null : Number(year);
 
     let list = [...cars];
-
-    if (searchText.trim()) {
-      const query = searchText.trim().toLowerCase();
-
-      list = list.filter((c) => {
-        return (
-          c.make.toLowerCase().includes(query) ||
-          c.model.toLowerCase().includes(query) ||
-          c.title.toLowerCase().includes(query) ||
-          String(c.year).includes(query)
-        );
-      });
-    }
 
     if (make) list = list.filter((c) => c.make === make);
 
@@ -202,27 +201,27 @@ export default function KopBilarPage() {
     }
 
     return list;
-  }, [cars, searchText, make, maxPrice, minPrice, year, fuel, sortBy]);
+  }, [cars, make, maxPrice, minPrice, year, fuel, sortBy]);
 
   const resultsCount = filteredAndSorted.length;
 
-  function resetAll() {
+  const resetAll = () => {
     setMake("");
     setMaxPrice("");
     setMinPrice("");
     setYear("");
     setFuel("");
     setSortBy("newest");
-  }
+  };
 
-  function getCarHref(id: string) {
+  const getCarHref = (id: string) => {
     return `/kop-bilar/${id}`;
-  }
+  };
 
   return (
     <div className={styles.page} id="top">
       <Container>
-        <h1 className={styles.pageTitle}>Köp bilar</h1>
+        <h1 className={styles.pageTitle}>Mina annonser</h1>
 
         <section className={styles.panel}>
           <div className={styles.panelInner}>
@@ -302,83 +301,111 @@ export default function KopBilarPage() {
 
               <button
                 type="button"
-                className={styles.resetButton}
+                className={styles.linkButton}
                 onClick={resetAll}
               >
                 Visa resultat...
               </button>
             </aside>
 
-            <section className={styles.results}>
-              <div className={styles.resultsHeader}>
-                <h2 className={styles.panelTitle}>RESULTAT</h2>
+            <div className={styles.result}>
+              <div className={styles.resultHeader}>
+                <h2 className={styles.panelTitle}>MINA BILAR</h2>
 
-                <div className={styles.sortArea}>
-                  <span>Sortering:</span>
-                  <select
-                    className={styles.sortSelect}
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortValue)}
-                  >
-                    <option value="newest">Nyaste först</option>
-                    <option value="priceAsc">Lägsta pris</option>
-                    <option value="priceDesc">Högsta pris</option>
-                  </select>
+                <div className={styles.resultRight}>
+                  <div className={styles.sortRow}>
+                    <span className={styles.sortLabel}>Sortering:</span>
+                    <select
+                      className={styles.sortSelect}
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as SortValue)}
+                    >
+                      <option value="newest">Nyaste först</option>
+                      <option value="priceAsc">Pris: lägst först</option>
+                      <option value="priceDesc">Pris: högst först</option>
+                    </select>
+                  </div>
+
+                  <p className={styles.countText}>
+                    Visar {resultsCount} annonser
+                  </p>
                 </div>
               </div>
 
-              <p className={styles.resultCount}>Visar {resultsCount} bilar</p>
+              {isLoading ? (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyTitle}>Laddar...</p>
+                  <p className={styles.emptyText}>
+                    Hämtar dina annonser från Supabase.
+                  </p>
+                </div>
+              ) : errorMessage ? (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyTitle}>Information</p>
+                  <p className={styles.emptyText}>{errorMessage}</p>
+                </div>
+              ) : resultsCount === 0 ? (
+                <div className={styles.emptyState}>
+                  <p className={styles.emptyTitle}>Inga annonser ännu</p>
+                  <p className={styles.emptyText}>
+                    Du har inte lagt upp någon bilannons ännu.
+                  </p>
 
-              {searchText && (
-                <p className={styles.resultCount}>
-                  Sökning: <strong>{searchText}</strong>
-                </p>
+                  <a className={styles.moreLink} href="/salj-bil">
+                    Skapa din första annons
+                  </a>
+                </div>
+              ) : (
+                <>
+                  <div className={styles.resultsGrid}>
+                    {filteredAndSorted.map((car) => (
+                      <CarCard
+                        key={car.id}
+                        title={`Model: ${car.make} ${car.model}`}
+                        price={formatPriceSEK(car.price)}
+                        image={car.image}
+                        href={getCarHref(car.id)}
+                        metaLines={[
+                          `Årsmodell: ${car.year}`,
+                          `Bränsle: ${car.fuel}`,
+                          `Publicerad: ${car.publishedAt}`,
+                          !car.isApproved
+                            ? "Status: Väntar på godkännande"
+                            : car.isSold
+                              ? "Status: Såld"
+                              : car.isExpired
+                                ? "Status: Annonsen har gått ut"
+                                : `Status: Aktiv annons · ${car.daysLeft} dagar kvar`,
+                        ]}
+                        fluid
+                      />
+                    ))}
+                  </div>
+
+                  <div className={styles.moreRow}>
+                    <a className={styles.moreLink} href="#top">
+                      Visa fler annonser...
+                    </a>
+                  </div>
+                </>
               )}
-
-              {isLoading && <p>Laddar bilar...</p>}
-
-              {errorMessage && <p>{errorMessage}</p>}
-
-              {!isLoading &&
-                !errorMessage &&
-                filteredAndSorted.length === 0 && (
-                  <p>Inga bilar matchade din sökning.</p>
-                )}
-
-              <div className={styles.grid}>
-                {filteredAndSorted.map((car) => (
-                  <CarCard
-                    key={car.id}
-                    title={`Model: ${car.title}`}
-                    price={formatPriceSEK(car.price)}
-                    image={car.image}
-                    href={getCarHref(car.id)}
-                    carId={car.id}
-                    fluid
-                    metaLines={[
-                      `Årsmodell: ${car.year}`,
-                      `Bränsle: ${car.fuel}`,
-                      `Mil: ${car.mileage}`,
-                      `Publicerad: ${car.publishedAt}`,
-                    ]}
-                  />
-                ))}
-              </div>
-            </section>
+            </div>
           </div>
         </section>
       </Container>
     </div>
   );
 }
-
 /*
-  Note to reviewer/teacher:
-  - This page shows all available cars from Supabase.
-  - It reads real data from the cars table and connected car_images table.
-  - It only shows cars where is_approved is true, is_sold is false and the ad is not expired.
-  - It receives homepage search from the URL, for example /kop-bilar?search=BMW.
-  - The search can match brand, model, title or year.
-  - The sidebar filters can filter by brand, price, year and fuel.
-  - Each car card links to its own detail page: /kop-bilar/[id].
+========================================
+MY ADS PAGE OVERVIEW
+========================================
+
+- Shows car ads created by the logged-in user.
+- Fetches only cars where user_id matches the current user.
+- Shows pending ads even before admin approval.
+- Displays status text for pending, sold, expired and active ads.
+- Allows the user to filter and sort their own ads.
+- Links each ad to the public car detail page when it is approved.
+
 */

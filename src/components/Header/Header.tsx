@@ -1,8 +1,81 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import styles from "./header.module.scss";
 
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    async function checkUserAndRole() {
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session?.user) {
+        setIsLoggedIn(false);
+        setIsAdmin(false);
+        return;
+      }
+
+      setIsLoggedIn(true);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.session.user.id)
+        .single();
+
+      setIsAdmin(profile?.role === "admin");
+    }
+
+    checkUserAndRole();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsLoggedIn(!!session);
+
+        if (!session?.user) {
+          setIsAdmin(false);
+          return;
+        }
+
+        setTimeout(() => {
+          checkUserAndRole();
+        }, 0);
+      },
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    router.push("/login");
+  }
+
+  function getLinkClass(href: string) {
+    if (href === "/kop-bilar" && pathname.startsWith("/kop-bilar")) {
+      return styles.activeLink;
+    }
+
+    if (href === "/admin" && pathname.startsWith("/admin")) {
+      return styles.activeLink;
+    }
+
+    return pathname === href ? styles.activeLink : "";
+  }
+
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
@@ -19,12 +92,64 @@ export default function Header() {
         </Link>
 
         <nav className={styles.nav} aria-label="Main navigation">
-          <Link href="/">Hem</Link>
-          <Link href="/kop-bilar">Köp bilar</Link>
-          <Link href="/salj-bil">Sälj bil</Link>
-          <Link href="/kontakt">Kontakt</Link>
+          <Link href="/" className={getLinkClass("/")}>
+            Hem
+          </Link>
+
+          <Link href="/kop-bilar" className={getLinkClass("/kop-bilar")}>
+            Köp bilar
+          </Link>
+
+          <Link href="/salj-bil" className={getLinkClass("/salj-bil")}>
+            Sälj bil
+          </Link>
+
+          <Link href="/kontakt" className={getLinkClass("/kontakt")}>
+            Kontakt
+          </Link>
+
+          {!isLoggedIn ? (
+            <>
+              <Link href="/login" className={getLinkClass("/login")}>
+                Logga in
+              </Link>
+
+              <Link href="/register" className={getLinkClass("/register")}>
+                Registrera
+              </Link>
+            </>
+          ) : (
+            <>
+              {isAdmin && (
+                <Link href="/admin" className={getLinkClass("/admin")}>
+                  Adminpanel
+                </Link>
+              )}
+
+              <Link href="/min-sida" className={getLinkClass("/min-sida")}>
+                Min sida
+              </Link>
+
+              <button onClick={handleLogout} className={styles.logoutButton}>
+                Logga ut
+              </button>
+            </>
+          )}
         </nav>
       </div>
     </header>
   );
 }
+
+/*
+  Header - short explanation
+
+  - This component shows the main navigation for the whole website.
+  - It checks if a visitor is logged in with Supabase.
+  - It also checks the user's role from the profiles table.
+  - If the user has role "admin", the Adminpanel link is shown.
+  - Normal users do not see the Adminpanel link.
+  - The role check is kept outside the auth listener with setTimeout.
+  - This prevents page navigation from hanging when switching between pages.
+  - The active menu link is highlighted based on the current page.
+*/

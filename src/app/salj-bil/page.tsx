@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.scss";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 type UploadImage = {
   id: string;
@@ -10,9 +12,31 @@ type UploadImage = {
 };
 
 export default function SaljBilPage() {
+  const router = useRouter();
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [images, setImages] = useState<UploadImage[]>([]);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  useEffect(() => {
+    async function checkAuth() {
+      const { data } = await supabase.auth.getSession();
+
+      if (!data.session) {
+        router.push("/login");
+        return;
+      }
+
+      setIsCheckingAuth(false);
+    }
+
+    checkAuth();
+  }, [router]);
+
+  if (isCheckingAuth) {
+    return <main className={styles.page}>Kontrollerar inloggning...</main>;
+  }
 
   function openFilePicker() {
     fileInputRef.current?.click();
@@ -22,13 +46,10 @@ export default function SaljBilPage() {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    // Limit (you can change this)
     const MAX_IMAGES = 10;
 
-    // Only allow images
     const imageFiles = files.filter((f) => f.type.startsWith("image/"));
 
-    // How many more we can add
     const remaining = MAX_IMAGES - images.length;
     const filesToAdd = imageFiles.slice(0, Math.max(0, remaining));
 
@@ -40,7 +61,6 @@ export default function SaljBilPage() {
 
     setImages((prev) => [...prev, ...newItems]);
 
-    // IMPORTANT: reset input so selecting the same file again still triggers change
     e.target.value = "";
   }
 
@@ -52,14 +72,154 @@ export default function SaljBilPage() {
     });
   }
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // For now: just frontend UI (no backend yet).
-    // Later you can send as FormData to an API route.
-    alert("Annons skickad! (Demo – ingen backend kopplad ännu)");
-  }
+    if (isSubmitting) return;
 
+    setIsSubmitting(true);
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
+
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      const formElement = e.target as HTMLFormElement;
+      const formData = new FormData(formElement);
+
+      const brand = String(formData.get("marke") || "").trim();
+      const model = String(formData.get("modell") || "");
+      const year = Number(formData.get("arsmodell"));
+      const mileage = Number(
+        String(formData.get("miltal") || "").replace(/\s/g, ""),
+      );
+      const price = Number(
+        String(formData.get("pris") || "").replace(/\s/g, ""),
+      );
+      const fuelType = String(formData.get("bransle") || "");
+      const transmission = String(formData.get("vaxellada") || "");
+      const version = String(formData.get("version") || "");
+      const color = String(formData.get("color") || "");
+      const bodyType = String(formData.get("bodyType") || "");
+      const registrationNumber = String(
+        formData.get("registrationNumber") || "",
+      );
+      const fuelConsumption = String(formData.get("fuelConsumption") || "");
+      const drivetrain = String(formData.get("drivetrain") || "");
+      const taxYearly = String(formData.get("taxYearly") || "");
+
+      const sellerName = String(formData.get("namn") || "");
+      const sellerPhone = String(formData.get("telefon") || "");
+      const sellerAddress = String(formData.get("sellerAddress") || "");
+      const sellerDescription = String(formData.get("sellerDescription") || "");
+      const title = `${brand.toUpperCase()} ${model}`;
+
+      const { data: carData, error: carError } = await supabase
+        .from("cars")
+        .insert({
+          user_id: user.id,
+          title,
+          brand,
+          model,
+          year,
+          mileage,
+          fuel_type: fuelType,
+          transmission,
+          price,
+          version,
+          color,
+          body_type: bodyType,
+          registration_number: registrationNumber,
+          fuel_consumption: fuelConsumption,
+          drivetrain,
+          tax_yearly: taxYearly,
+
+          seller_name: sellerName,
+          seller_phone: sellerPhone,
+          seller_address: sellerAddress,
+          seller_description: sellerDescription,
+
+          description: sellerDescription,
+          location: sellerAddress,
+          // New ads wait for admin approval before public display.
+          is_approved: false,
+        })
+        .select("id")
+        .single();
+
+      if (carError) {
+        console.error(carError);
+        alert("Något gick fel när bilen skulle sparas.");
+        return;
+      }
+
+      // Creates an admin message when a new ad is waiting for approval.
+      await supabase.from("messages").insert({
+        name: sellerName || "Ny säljare",
+        phone: sellerPhone,
+        email: user.email || "",
+        subject: "Ny bilannons väntar på godkännande",
+        message: `En ny bilannons har skickats in och väntar på granskning.
+
+Bil: ${title}
+Pris: ${price.toLocaleString("sv-SE")} kr
+Annons-ID: ${carData.id}
+
+Kontrollera bilder och information innan annonsen publiceras.`,
+      });
+
+      if (images.length > 0) {
+        const imageRows = [];
+
+        for (let i = 0; i < images.length; i++) {
+          const image = images[i];
+          const fileExt = image.file.name.split(".").pop();
+          const filePath = `${user.id}/${carData.id}/${crypto.randomUUID()}.${fileExt}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("car-images")
+            .upload(filePath, image.file);
+
+          if (uploadError) {
+            console.error(uploadError);
+            alert("Bilen sparades, men en bild kunde inte laddas upp.");
+            return;
+          }
+
+          const { data: publicUrlData } = supabase.storage
+            .from("car-images")
+            .getPublicUrl(filePath);
+
+          imageRows.push({
+            car_id: carData.id,
+            image_url: publicUrlData.publicUrl,
+            sort_order: i,
+          });
+        }
+
+        const { error: imageDbError } = await supabase
+          .from("car_images")
+          .insert(imageRows);
+
+        if (imageDbError) {
+          console.error(imageDbError);
+          alert("Bilen sparades, men bildlänkarna kunde inte sparas.");
+          return;
+        }
+      }
+
+      alert(
+        "Din annons har skickats in och väntar på granskning. Vi kontrollerar annonsen och publicerar den inom 24 timmar om allt ser bra ut.",
+      );
+      router.push("/mina-annonser");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
   return (
     <main className={styles.page}>
       <div className={styles.container}>
@@ -76,15 +236,14 @@ export default function SaljBilPage() {
                   <label className={styles.label} htmlFor="marke">
                     Märke:
                   </label>
-                  <select className={styles.input} id="marke" name="marke" defaultValue="">
-                    <option value="" disabled>
-                      Volvo / BMW ...
-                    </option>
-                    <option value="volvo">Volvo</option>
-                    <option value="bmw">BMW</option>
-                    <option value="audi">Audi</option>
-                    <option value="vw">Volkswagen</option>
-                  </select>
+                  <input
+                    className={styles.input}
+                    id="marke"
+                    name="marke"
+                    type="text"
+                    placeholder="t.ex. Volvo / BMW / Toyota / Kia"
+                    required
+                  />
                 </div>
 
                 <div className={styles.field}>
@@ -104,7 +263,12 @@ export default function SaljBilPage() {
                   <label className={styles.label} htmlFor="arsmodell">
                     Årsmodell:
                   </label>
-                  <select className={styles.input} id="arsmodell" name="arsmodell" defaultValue="">
+                  <select
+                    className={styles.input}
+                    id="arsmodell"
+                    name="arsmodell"
+                    defaultValue=""
+                  >
                     <option value="" disabled>
                       2020
                     </option>
@@ -123,21 +287,38 @@ export default function SaljBilPage() {
                   <label className={styles.label} htmlFor="miltal">
                     Miltal:
                   </label>
-                  <input className={styles.input} id="miltal" name="miltal" type="text" placeholder="t.ex. 12 500" />
+                  <input
+                    className={styles.input}
+                    id="miltal"
+                    name="miltal"
+                    type="text"
+                    placeholder="t.ex. 12 500"
+                  />
                 </div>
 
                 <div className={styles.field}>
                   <label className={styles.label} htmlFor="pris">
                     Pris (kr):
                   </label>
-                  <input className={styles.input} id="pris" name="pris" type="text" placeholder="t.ex. 149 000" />
+                  <input
+                    className={styles.input}
+                    id="pris"
+                    name="pris"
+                    type="text"
+                    placeholder="t.ex. 149 000"
+                  />
                 </div>
 
                 <div className={styles.field}>
                   <label className={styles.label} htmlFor="bransle">
                     Bränsle:
                   </label>
-                  <select className={styles.input} id="bransle" name="bransle" defaultValue="">
+                  <select
+                    className={styles.input}
+                    id="bransle"
+                    name="bransle"
+                    defaultValue=""
+                  >
                     <option value="" disabled>
                       Bensin / Diesel / El
                     </option>
@@ -146,6 +327,115 @@ export default function SaljBilPage() {
                     <option value="el">El</option>
                     <option value="hybrid">Hybrid</option>
                   </select>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="vaxellada">
+                    Växellåda:
+                  </label>
+                  <select
+                    className={styles.input}
+                    id="vaxellada"
+                    name="vaxellada"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>
+                      Automat / Manuell
+                    </option>
+                    <option value="automat">Automat</option>
+                    <option value="manuell">Manuell</option>
+                  </select>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="version">
+                    Version:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="version"
+                    name="version"
+                    type="text"
+                    placeholder="t.ex. D3 R-Design"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="color">
+                    Färg:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="color"
+                    name="color"
+                    type="text"
+                    placeholder="t.ex. Vit"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="bodyType">
+                    Karosstyp:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="bodyType"
+                    name="bodyType"
+                    type="text"
+                    placeholder="t.ex. Kombi / SUV"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="registrationNumber">
+                    Regnummer:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="registrationNumber"
+                    name="registrationNumber"
+                    type="text"
+                    placeholder="t.ex. ABC123"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="fuelConsumption">
+                    Förbrukning:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="fuelConsumption"
+                    name="fuelConsumption"
+                    type="text"
+                    placeholder="t.ex. 4,8 l/100km"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="drivetrain">
+                    Drivhjul:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="drivetrain"
+                    name="drivetrain"
+                    type="text"
+                    placeholder="t.ex. Framhjulsdrift"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="taxYearly">
+                    Årlig skatt:
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="taxYearly"
+                    name="taxYearly"
+                    type="text"
+                    placeholder="t.ex. 3353 kr"
+                  />
                 </div>
               </section>
 
@@ -157,7 +447,13 @@ export default function SaljBilPage() {
                   <label className={styles.label} htmlFor="namn">
                     Namn
                   </label>
-                  <input className={styles.input} id="namn" name="namn" type="text" placeholder="Ditt namn..." />
+                  <input
+                    className={styles.input}
+                    id="namn"
+                    name="namn"
+                    type="text"
+                    placeholder="Ditt namn..."
+                  />
                 </div>
 
                 <div className={styles.field}>
@@ -185,77 +481,109 @@ export default function SaljBilPage() {
                     placeholder="dinmail@exempel.se"
                   />
                 </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="sellerAddress">
+                    Adress
+                  </label>
+                  <input
+                    className={styles.input}
+                    id="sellerAddress"
+                    name="sellerAddress"
+                    type="text"
+                    placeholder="t.ex. Hejdalsvägen 2, Karlstad"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="sellerDescription">
+                    Beskrivning
+                  </label>
+
+                  <textarea
+                    className={styles.textarea}
+                    id="sellerDescription"
+                    name="sellerDescription"
+                    placeholder="Skriv kort information om bilen eller säljaren..."
+                    rows={5}
+                  />
+                </div>
               </section>
             </div>
           </div>
 
-            {/* IMAGES */}
-            <section className={styles.imagesSection}>
+          {/* IMAGES */}
+          <section className={styles.imagesSection}>
             <h2 className={styles.imagesTitle}>BILDER</h2>
 
             {/* Hidden input */}
             <input
-                ref={fileInputRef}
-                className={styles.hiddenInput}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={onFilesSelected}
+              ref={fileInputRef}
+              className={styles.hiddenInput}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={onFilesSelected}
             />
 
             {/* If NO images yet -> show the big upload box */}
             {images.length === 0 && (
-                <button
+              <button
                 type="button"
                 className={styles.uploadBox}
                 onClick={openFilePicker}
                 aria-label="Lägg till bilder"
-                >
+              >
                 <div className={styles.uploadInner}>
-                    <p className={styles.uploadMain}>+ Lägg till bilder</p>
-                    <p className={styles.uploadSub}>PNG, JPG • Max 10 bilder</p>
+                  <p className={styles.uploadMain}>+ Lägg till bilder</p>
+                  <p className={styles.uploadSub}>PNG, JPG • Max 10 bilder</p>
                 </div>
-                </button>
+              </button>
             )}
 
             {/* If images exist -> show small add button + grid */}
             {images.length > 0 && (
-                <>
+              <>
                 <button
-                    type="button"
-                    className={styles.addMoreBtn}
-                    onClick={openFilePicker}
-                    aria-label="Lägg till fler bilder"
+                  type="button"
+                  className={styles.addMoreBtn}
+                  onClick={openFilePicker}
+                  aria-label="Lägg till fler bilder"
                 >
-                    + Lägg till fler bilder
+                  + Lägg till fler bilder
                 </button>
 
                 <div className={styles.thumbGrid}>
-                    {images.map((img) => (
+                  {images.map((img) => (
                     <div key={img.id} className={styles.thumbItem}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img className={styles.thumbImg} src={img.url} alt={img.file.name} />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className={styles.thumbImg}
+                        src={img.url}
+                        alt={img.file.name}
+                      />
 
-                        <button
+                      <button
                         type="button"
                         className={styles.removeBtn}
                         onClick={() => removeImage(img.id)}
                         aria-label={`Ta bort bild ${img.file.name}`}
-                        >
+                      >
                         ✕
-                        </button>
+                      </button>
                     </div>
-                    ))}
+                  ))}
                 </div>
-                </>
+              </>
             )}
 
-            <button type="submit" className={styles.submitBtn}>
-                Skicka annons
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Skickar..." : "Skicka annons"}
             </button>
-
-  
-
 
             <p className={styles.afterText}>Vi återkommer inom 24 timmar</p>
           </section>
